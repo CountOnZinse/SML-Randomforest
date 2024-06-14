@@ -209,9 +209,11 @@ gen_dataset <- function(p, n, min_cor, max_cor){
   
   y_sick <- ifelse(y_sick >= min(y_sick) & y_sick < 0, "sick", "non-sick")
   
-  out <- cbind.data.frame(y, 
-                          y_sick,
+  out <- cbind.data.frame(as.factor(y), 
+                          as.factor(y_sick),
                           x_val[, -1])
+  
+  colnames(out) <- c("y", "y_sick", paste0("x", 2:p)) 
   
   out
   
@@ -237,8 +239,21 @@ sample_data <- pop[sample(1:nrow(pop), 10000), ]
 table(sample_data$y)
 table(sample_data$y_sick)
 
+idx <- sample(1:nrow(sample_data), 0.8*10000)
+
+train <- sample_data[idx, ]
+test <- sample_data[-idx, ]
+
+table(train$y)
+table(test$y)
+
 # Random Forest
 
-randomForest()
+rf_model <- randomForest(y ~ .,
+                         data = sample_data[, -2],
+                         type = "classification",
+                         ntree = 200)
 
+y_pred <- predict(rf_model, newdata = test[, c(-1, -2)])
 
+table(y_pred)
