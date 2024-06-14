@@ -1,10 +1,12 @@
 
 # Test-script #
 
+# load the necessary packages
 install.packages("pacman")
-pacman::p_load(tidyverse, randomForest)
+pacman::p_load(tidyverse, randomForest, MLmetrics)
 
 
+# start of testing 
 p <- 40
 n <- 100000
 
@@ -113,7 +115,11 @@ out
 
 table(y)
 
-gen_dataset <- function(p, n, min_cor, max_cor){
+# end of testing and building function
+
+######################### Generating data function #############################
+
+gen_dataset <- function(p, n, min_cor, max_cor, reg = F){
   
   # generate x values
   x <- paste0(rep("x", p), 0:(p-1))
@@ -178,10 +184,12 @@ gen_dataset <- function(p, n, min_cor, max_cor){
     
     idx <- sample(1:n, abs(n*cor_var[i]))
     
+    # for positive correlation
     if(cor_var[i] > 0){
       
       x_val[idx, i] <- 1.351*x_val[idx, idx_var[i]]
-      
+     
+    # for negative correlation   
     }else{
       
       x_val[idx, i] <- -1.351*x_val[idx, idx_var[i]]
@@ -190,34 +198,115 @@ gen_dataset <- function(p, n, min_cor, max_cor){
     
   }
   
-  beta <- sample(seq(-1, 3, 0.1), p, replace = T)
-  
-  epsi <- rnorm(n)
-  
-  y <- x_val %*% as.vector(beta) + epsi
-  
-  y <- ifelse(y >= min(y) & y < -2, "Tanne",
-              ifelse(y >= -2 & y < 0, "Kiefer",
-                     ifelse(y >= 0 & y < 1, "Rotbuche",
-                            ifelse(y >= 1 & y < 2, "Eiche", "Esche"))))
-  
+  # beta weights for the regression model
   beta <- sample(seq(-1, 2, 0.1), p, replace = T)
   
+  # epsilon
   epsi <- rnorm(n)
   
+  # calculate y
+  y <- x_val %*% as.vector(beta) + epsi
+  
+  # generating multivariate y
+  y <- ifelse(y >= min(y) & y < -5, "Tanne",
+              ifelse(y >= -5 & y < -1, "Esche",
+                     ifelse(y >= -1 & y < 5, "Rotbuche",
+                            ifelse(y >= 5 & y < 20, "Eiche", "Kiefer"))))
+  
+  # beta weights 
+  beta <- sample(seq(-1, 2, 0.1), p, replace = T)
+  
+  # epsilon
+  epsi <- rnorm(n)
+  
+  # calculate y
   y_sick <- x_val %*% as.vector(beta) + epsi
   
+  # generating bivariate y
   y_sick <- ifelse(y_sick >= min(y_sick) & y_sick < 0, "sick", "non-sick")
   
   out <- cbind.data.frame(as.factor(y), 
                           as.factor(y_sick),
                           x_val[, -1])
   
+  # rename 
   colnames(out) <- c("y", "y_sick", paste0("x", 2:p)) 
   
   out
   
 }
+
+####################### Doing the actual work ##################################
+
+############################# Classification ###################################
+
+# ---- bivariate Analysis ---- 
+
+set.seed(1234)
+
+pop <- gen_dataset(p = 40, n = 100000,
+                   min_cor = -0.3,
+                   max_cor = 0.5)
+
+cor(pop[, c(-1, -2)])
+
+str(pop)
+
+table(pop$y_sick)
+
+# Sampling the data
+
+sample_data <- pop[sample(1:nrow(pop), 20000), ]
+
+table(sample_data$y_sick)
+
+idx <- sample(1:nrow(sample_data), 0.8*20000)
+
+train <- sample_data[idx, ]
+test <- sample_data[-idx, ]
+
+table(train$y_sick)
+table(test$y_sick)
+
+# Random Forest
+
+rf_model <- randomForest(y_sick ~ .,
+                         data = train[, -1],
+                         type = "classification",
+                         ntree = 200)
+
+y_pred <- predict(rf_model, newdata = test[, c(-1, -2)])
+
+table(y_pred)
+
+# Compute the accuracy
+acc <- cbind.data.frame(test$y_sick, y_pred)
+table(acc)
+
+sum(diag(table(acc)))/sum(table(acc))
+
+# Compute F1 Score
+F1_Score(y_true = acc$`test$y_sick`,
+         y_pred = acc$y_pred)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ---- multivariate Analysis ----
+
+set.seed(1234)
 
 # create dataset
 
@@ -230,16 +319,15 @@ cor(pop[, c(-1, -2)])
 str(pop)
 
 table(pop$y)
-table(pop$y_sick)
 
 # Sampling the data
 
-sample_data <- pop[sample(1:nrow(pop), 10000), ]
+sample_data <- pop[sample(1:nrow(pop), 20000), ]
 
 table(sample_data$y)
 table(sample_data$y_sick)
 
-idx <- sample(1:nrow(sample_data), 0.8*10000)
+idx <- sample(1:nrow(sample_data), 0.8*20000)
 
 train <- sample_data[idx, ]
 test <- sample_data[-idx, ]
@@ -250,10 +338,42 @@ table(test$y)
 # Random Forest
 
 rf_model <- randomForest(y ~ .,
-                         data = sample_data[, -2],
+                         data = train[, -2],
                          type = "classification",
                          ntree = 200)
 
 y_pred <- predict(rf_model, newdata = test[, c(-1, -2)])
 
 table(y_pred)
+
+# Compute the accuracy
+acc <- cbind.data.frame(test$y, y_pred)
+table(acc)
+
+sum(diag(table(acc)))/sum(table(acc))
+
+# compute the F1 Score
+F1_Score(y_true = acc$`test$y`,
+         y_pred = acc$y_pred)
+
+# ---- Cross-Validation ----
+
+cv <- function(data){
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
