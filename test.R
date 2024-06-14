@@ -207,7 +207,7 @@ gen_dataset <- function(p, n, min_cor, max_cor, reg = F){
   # calculate y
   y <- x_val %*% as.vector(beta) + epsi
   
-  # generating multivariate y
+  # generating multinomial y
   y <- ifelse(y >= min(y) & y < -5, "Tanne",
               ifelse(y >= -5 & y < -1, "Esche",
                      ifelse(y >= -1 & y < 5, "Rotbuche",
@@ -222,7 +222,7 @@ gen_dataset <- function(p, n, min_cor, max_cor, reg = F){
   # calculate y
   y_sick <- x_val %*% as.vector(beta) + epsi
   
-  # generating bivariate y
+  # generating binomial y
   y_sick <- ifelse(y_sick >= min(y_sick) & y_sick < 0, "sick", "non-sick")
   
   out <- cbind.data.frame(as.factor(y), 
@@ -240,7 +240,7 @@ gen_dataset <- function(p, n, min_cor, max_cor, reg = F){
 
 ############################# Classification ###################################
 
-# ---- bivariate Analysis ---- 
+# ---- binomial Analysis ---- 
 
 set.seed(1234)
 
@@ -304,7 +304,7 @@ F1_Score(y_true = acc$`test$y_sick`,
 
 
 
-# ---- multivariate Analysis ----
+# ---- multinomial Analysis ----
 
 set.seed(1234)
 
