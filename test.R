@@ -2,8 +2,14 @@
 # Test-script #
 
 # load the necessary packages
-install.packages("pacman")
-pacman::p_load(tidyverse, randomForest, MLmetrics)
+if (!require("pacman")) {
+  install.packages("pacman")
+} 
+if (!require("hardhat")) {
+  install.packages("hardhat")
+}
+pacman::p_load(tidyverse, randomForest, randomForestSRC, ranger,
+               caret, hardhat, purrr, MLmetrics, foreach, doParallel)
 
 
 # start of testing 
@@ -358,13 +364,91 @@ F1_Score(y_true = acc$`test$y`,
 
 # ---- Cross-Validation ----
 
-cv <- function(data){
+cv_rf <- function(train_data, test_data, mtry, ntree,
+                  replace = NULL, formula = NULL){
+  
+  if(is.character(formula)==T){
+    
+  }else{
+    print("Formula needs to be written as character")
+    break
+  }
+  
+  out <- list()
+  
+  time <- vector("numeric", length = 3)
+  
+  # Function randomForest
+  time_rf <- Sys.time()
+  
+  obj_rf <- randomForest(eval(parse(text = formula)),
+                         data = train_data,
+                         type = "classification",
+                         ntree = ntree)
+  
+  time[1] <- Sys.time() - time_rf
+  
+  # Function ranger
+  time_rngr <- Sys.time()
+  
+  obj_rngr <- ranger(eval(parse(text = formula)),
+                     data = train_data,
+                     num.trees = ntree)
+  
+  time[2] <- Sys.time() - time_rngr
+  
+  # Function caret
+  time_crt <- Sys.time()
+  
+  obj_crt <- caret::train(method = "rf",
+                          eval(parse(text = formula)),
+                          data = train_data,
+                          ntree = ntree)
+  
+  time[3] <- Sys.time() - time_crt
+  
+  time
   
 }
 
+registerDoParallel(detectCores()-1)
 
+n_tree <- seq(5, 10, 2)
+mtry <- 2:4
 
+# grid with all the hyperparameters
+grid_hp <- expand.grid(n_tree, mtry)
 
+out_fe <- foreach(i = 1:nrow(grid_hp),
+                  .multicombine = T,
+                  .combine = "list",
+                  .packages = c("randomForest", "ranger", "caret")) %dopar% { 
+                    cv_rf(train_data = train[, -2], ntree = grid_hp[i, 1],
+                       mtry = grid_hp[i, 2], replace = NULL, formula = "y ~ .")
+                  }
+
+registerDoParallel(1)
+
+out_fe
+
+# ---- classification with different packages ----
+
+obj_rf <- randomForest(y ~ .,
+                       data = train[, -2],
+                       type = "classification",
+                       ntree = 200,
+                       mtry = 4)
+
+obj_rngr <- ranger(y ~ .,
+                   data = train[, -2],
+                   num.trees = 200,
+                   mtry = 4) 
+
+obj_crt <- caret::train(method = "rf",
+                        y ~ .,
+                        data = train[, -2],
+                        ntree = 200,
+                        mtry = 4)
 
 
 
