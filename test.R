@@ -2,8 +2,8 @@
 # Test-script #
 
 # load the necessary packages
-install.packages("pacman")
-pacman::p_load(tidyverse, randomForest, MLmetrics)
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, randomForest, MLmetrics, doParallel, ranger, caret)
 
 
 # start of testing 
@@ -238,6 +238,8 @@ gen_dataset <- function(p, n, min_cor, max_cor, reg = F){
 
 ####################### Doing the actual work ##################################
 
+############################# Simulation #######################################
+
 ############################# Classification ###################################
 
 # ---- binomial Analysis ---- 
@@ -358,20 +360,30 @@ F1_Score(y_true = acc$`test$y`,
 
 # ---- Cross-Validation ----
 
-cv <- function(data){
-  
-}
+cores <- detectCores()
+
+cl <- makeCluster(cores/2)
+registerDoParallel(cl)
+
+start <- Sys.time()
+
+result <- rfcv(trainx = as.matrix(train[, c(-1, -2)]),
+               trainy = train$y_sick,
+               cv.fold = 3)
+
+Sys.time() - start
+
+stopCluster(cl)
+
+with(result, plot(n.var, error.cv, log="x", type="o", lwd=2))
 
 
 
+############################### Own Data #######################################
 
+data <- read.csv("covtype.csv")
 
-
-
-
-
-
-
+View(data)
 
 
 
