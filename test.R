@@ -1,5 +1,4 @@
 
-
 # Test-script #
 
 # load the necessary packages
@@ -386,11 +385,6 @@ data <- read.csv("covtype.csv")
 
 View(data)
 
-
-
-
-
-=======
 
 # Test-script #
 
@@ -849,9 +843,3 @@ obj_crt <- caret::train(method = "rf",
 
 
 
-
-
-
-
-
->>>>>>> bcdcee1e0c721d18c155dc3150c813cbeb115981
