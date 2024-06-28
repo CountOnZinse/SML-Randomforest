@@ -414,13 +414,14 @@ cv_rf <- function(train_data, test_data, mtry, ntree,
 registerDoParallel(detectCores()-1)
 
 n_tree <- seq(5, 10, 2)
-mtry <- 1:4
+mtry <- 2:4
 
 # grid with all the hyperparameters
 grid_hp <- expand.grid(n_tree, mtry)
 
 out_fe <- foreach(i = 1:nrow(grid_hp),
-                  .combine = "rbind.data.frame",
+                  .multicombine = T,
+                  .combine = "list",
                   .packages = c("randomForest", "ranger", "caret")) %dopar% { 
                     cv_rf(train_data = train[, -2], ntree = grid_hp[i, 1],
                        mtry = grid_hp[i, 2], replace = NULL, formula = "y ~ .")
