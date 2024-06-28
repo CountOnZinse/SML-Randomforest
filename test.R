@@ -1,4 +1,3 @@
-
 # Test-script #
 
 # load the necessary packages
@@ -449,15 +448,4 @@ obj_crt <- caret::train(method = "rf",
                         data = train[, -2],
                         ntree = 200,
                         mtry = 4)
-
-
-
-
-
-
-
-
-
-
-
 
