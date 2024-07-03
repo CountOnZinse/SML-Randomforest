@@ -1,6 +1,9 @@
 
 # Test-script #
 
+install.packages('hardhat_1.4.0.zip', repos = NULL)
+install.packages('tibble_3.2.1.zip', repos = NULL)
+
 # load the necessary packages
 if (!require("pacman")) {
   install.packages("pacman")
@@ -8,8 +11,9 @@ if (!require("pacman")) {
 if (!require("hardhat")) {
   install.packages("hardhat")
 }
+
 pacman::p_load(tidyverse, randomForest, randomForestSRC, ranger,
-               caret, hardhat, purrr, MLmetrics, foreach, doParallel)
+               caret, hardhat, purrr, MLmetrics, foreach, doParallel, tibble)
 
 
 # start of testing 
@@ -250,7 +254,7 @@ gen_dataset <- function(p, n, min_cor, max_cor, reg = F){
 
 set.seed(1234)
 
-pop <- gen_dataset(p = 40, n = 100000,
+pop <- gen_dataset(p = 44, n = 100000,
                    min_cor = -0.3,
                    max_cor = 0.5)
 
@@ -281,6 +285,8 @@ rf_model <- randomForest(y_sick ~ .,
                          type = "classification",
                          ntree = 200)
 
+plot(getTree(rf_model, 3))
+
 y_pred <- predict(rf_model, newdata = test[, c(-1, -2)])
 
 table(y_pred)
@@ -295,6 +301,10 @@ sum(diag(table(acc)))/sum(table(acc))
 F1_Score(y_true = acc$`test$y_sick`,
          y_pred = acc$y_pred)
 
+# Compute Fbeta Score
+FBeta_Score(y_true = acc$`test$y_sick`,
+            y_pred = acc$y_pred,
+            beta = 0.5)
 
 
 
@@ -302,12 +312,12 @@ F1_Score(y_true = acc$`test$y_sick`,
 
 
 
+# Random Forest SRC
 
-
-
-
-
-
+rfsrc_model <- randomForestSRC::rfsrc(y_sick ~ .,
+                                   data = train[, c(-1)],
+                                   type = "classification",
+                                   ntree = 200)
 
 
 # ---- multinomial Analysis ----
@@ -362,6 +372,11 @@ sum(diag(table(acc)))/sum(table(acc))
 F1_Score(y_true = acc$`test$y`,
          y_pred = acc$y_pred)
 
+# Compute Fbeta Score
+FBeta_Score(y_true = acc$`test$y`,
+            y_pred = acc$y_pred,
+            beta = 1)
+
 # ---- Cross-Validation ----
 
 cv_rf <- function(train_data, test_data, mtry, ntree,
@@ -413,8 +428,8 @@ cv_rf <- function(train_data, test_data, mtry, ntree,
 
 registerDoParallel(detectCores()-1)
 
-n_tree <- seq(5, 10, 2)
-mtry <- 2:4
+n_tree <- seq(100, 500, 100)
+mtry <- 2:8
 
 # grid with all the hyperparameters
 grid_hp <- expand.grid(n_tree, mtry)
