@@ -13,7 +13,8 @@ if (!require("hardhat")) {
 }
 
 pacman::p_load(tidyverse, randomForest, randomForestSRC, ranger,
-               caret, hardhat, purrr, MLmetrics, foreach, doParallel, tibble)
+               caret, hardhat, purrr, MLmetrics, foreach, doParallel, tibble,
+               paletteer)
 
 
 # start of testing 
@@ -376,6 +377,9 @@ F1_Score(y_true = acc$`test$y`,
 FBeta_Score(y_true = acc$`test$y`,
             y_pred = acc$y_pred,
             beta = 1)
+
+
+
 
 # ---- Cross-Validation ----
 
