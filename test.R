@@ -13,7 +13,8 @@ if (!require("hardhat")) {
 }
 
 pacman::p_load(tidyverse, randomForest, randomForestSRC, ranger,
-               caret, hardhat, purrr, MLmetrics, foreach, doParallel, tibble)
+               caret, hardhat, purrr, MLmetrics, foreach, doParallel, tibble,
+               paletteer)
 
 
 # start of testing 
@@ -378,6 +379,7 @@ FBeta_Score(y_true = acc$`test$y`,
             beta = 1)
 
 
+<<<<<<< HEAD
 # ---- classification with different packages ----
 
 obj_rf <- randomForest(y ~ .,
@@ -396,6 +398,9 @@ obj_crt <- caret::train(method = "rf",
                         data = train[, -2],
                         ntree = 200,
                         mtry = 4)
+=======
+
+>>>>>>> main
 
 # ---- Cross-Validation ----
 
