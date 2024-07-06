@@ -377,11 +377,32 @@ FBeta_Score(y_true = acc$`test$y`,
             y_pred = acc$y_pred,
             beta = 1)
 
+
+# ---- classification with different packages ----
+
+obj_rf <- randomForest(y ~ .,
+                       data = train[, -2],
+                       type = "classification",
+                       ntree = 200,
+                       mtry = 4)
+
+obj_rngr <- ranger(y ~ .,
+                   data = train[, -2],
+                   num.trees = 200,
+                   mtry = 4) 
+
+obj_crt <- caret::train(method = "rf",
+                        y ~ .,
+                        data = train[, -2],
+                        ntree = 200,
+                        mtry = 4)
+
 # ---- Cross-Validation ----
 
 cv_rf <- function(train_data, test_data, mtry, ntree,
                   replace = NULL, formula = NULL){
   
+  # checking for string in formula
   if(is.character(formula)==T){
     
   }else{
@@ -389,8 +410,7 @@ cv_rf <- function(train_data, test_data, mtry, ntree,
     break
   }
   
-  out <- list()
-  
+  # vector for computational time
   time <- vector("numeric", length = 3)
   
   # Function randomForest
@@ -426,7 +446,12 @@ cv_rf <- function(train_data, test_data, mtry, ntree,
   
 }
 
-registerDoParallel(detectCores()-1)
+# this function provides the cores for later usage in the foreach loop so 
+# we do it parallel
+
+# adjust the cores here - it depends on how many cores you have 
+# you should use at least 2 cores
+registerDoParallel(detectCores()/3)
 
 n_tree <- seq(100, 500, 100)
 mtry <- 2:8
@@ -435,33 +460,17 @@ mtry <- 2:8
 grid_hp <- expand.grid(n_tree, mtry)
 
 out_fe <- foreach(i = 1:nrow(grid_hp),
-                  .multicombine = T,
-                  .combine = "list",
+                  .multicombine = T, # combine the results efficiently
+                  .combine = "list", # way of binding
                   .packages = c("randomForest", "ranger", "caret")) %dopar% { 
+                    # load the packages for the function, otherwise error
                     cv_rf(train_data = train[, -2], ntree = grid_hp[i, 1],
                        mtry = grid_hp[i, 2], replace = NULL, formula = "y ~ .")
                   }
 
-registerDoParallel(1)
+registerDoParallel(1) # reset the cores
 
 out_fe
 
-# ---- classification with different packages ----
 
-obj_rf <- randomForest(y ~ .,
-                       data = train[, -2],
-                       type = "classification",
-                       ntree = 200,
-                       mtry = 4)
-
-obj_rngr <- ranger(y ~ .,
-                   data = train[, -2],
-                   num.trees = 200,
-                   mtry = 4) 
-
-obj_crt <- caret::train(method = "rf",
-                        y ~ .,
-                        data = train[, -2],
-                        ntree = 200,
-                        mtry = 4)
 
