@@ -34,10 +34,10 @@ x_val <- matrix(data = 0,
 x_val[, 1] <- 1
 
 # different distributions for x 
-dist_disc <- sample(c("norm", "ordinal", "beta",  "uni"),
+dist_disc <- sample(c("norm", "beta",  "uni"),
                     p,
                     replace = T,
-                    prob = c(0.6, 0.2, 0.15, 0.05))
+                    prob = c(0.6, 0.25, 0.15))
 
 # generating x by drawing out of different distributions
 for(i in 2:p){
@@ -49,11 +49,7 @@ for(i in 2:p){
     
     x_val[, i] <- rnorm(n, mu, sig)
     
-  }else if(dist_disc[i] == "ordinal"){
-    
-    x_val[, i] <- sample(1:10, n, replace = T)
-    
-  } else if(dist_disc[i] == "beta"){
+  }else if(dist_disc[i] == "beta"){
     
     alpha <- sample(seq(0.5, 5, 0.1), 1) 
     beta <- sample(seq(0.5, 5, 0.1), 1) 
@@ -142,10 +138,10 @@ gen_dataset <- function(p, n, min_cor, max_cor, reg = F){
   x_val[, 1] <- 1
   
   # different distributions for x 
-  dist_disc <- sample(c("norm", "ordinal", "beta",  "uni"),
+  dist_disc <- sample(c("norm", "beta",  "uni"),
                       p,
                       replace = T,
-                      prob = c(0.6, 0.2, 0.15, 0.05))
+                      prob = c(0.6, 0.25, 0.15))
   
   # generating x by drawing out of different distributions
   for(i in 2:p){
@@ -157,11 +153,7 @@ gen_dataset <- function(p, n, min_cor, max_cor, reg = F){
       
       x_val[, i] <- rnorm(n, mu, sig)
       
-    }else if(dist_disc[i] == "ordinal"){
-      
-      x_val[, i] <- sample(1:10, n, replace = T)
-      
-    } else if(dist_disc[i] == "beta"){
+    }else if(dist_disc[i] == "beta"){
       
       alpha <- sample(seq(0.5, 5, 0.1), 1) 
       beta <- sample(seq(0.5, 5, 0.1), 1) 
@@ -392,17 +384,22 @@ obj_rngr <- ranger(y ~ .,
                    num.trees = 200,
                    mtry = 4) 
 
+out <- predict(obj_rngr, data = test[, c(-1, -2)])
+
+out$predictions
+
 obj_crt <- caret::train(method = "rf",
                         y ~ .,
                         data = train[, -2],
                         ntree = 200,
-                        mtry = 4)
+                        tuneGrid = NULL)
 
+predict(obj_crt, newdata = test[, c(-1, -2)])
 
 # ---- Cross-Validation ----
 
-cv_rf <- function(train_data, test_data, mtry, ntree,
-                  replace = NULL, formula = NULL){
+cv_rf <- function(train_data, test_data, y, mtry, ntree,
+                  replace = NULL, formula = NULL, f_beta = 0.5){
   
   # checking for string in formula
   if(is.character(formula)==T){
@@ -412,8 +409,8 @@ cv_rf <- function(train_data, test_data, mtry, ntree,
     break
   }
   
-  # vector for computational time
-  time <- vector("numeric", length = 3)
+  # matrix for the acc, f_one and f_beta
+  gof_out <- matrix(0, nrow = 3, ncol = 4)
   
   # Function randomForest
   time_rf <- Sys.time()
@@ -423,7 +420,27 @@ cv_rf <- function(train_data, test_data, mtry, ntree,
                          type = "classification",
                          ntree = ntree)
   
-  time[1] <- Sys.time() - time_rf
+  # time
+  gof_out[1, 4] <- Sys.time() - time_rf
+  
+  y_pred <- predict(obj_rf, newdata = test_data)
+  
+  table(y_pred)
+  
+  # Compute the accuracy
+  acc <- cbind.data.frame(test$y, y_pred)
+  table(acc)
+  
+  gof_out[1, 1] <- sum(diag(table(acc)))/sum(table(acc))
+  
+  # compute the F1 Score
+  gof_out[1, 2] <- F1_Score(y_true = acc$`test$y`,
+                            y_pred = acc$y_pred)
+  
+  # Compute Fbeta Score
+  gof_out[1, 3] <- FBeta_Score(y_true = acc$`test$y`,
+                               y_pred = acc$y_pred,
+                               beta = f_beta)
   
   # Function ranger
   time_rngr <- Sys.time()
@@ -432,7 +449,27 @@ cv_rf <- function(train_data, test_data, mtry, ntree,
                      data = train_data,
                      num.trees = ntree)
   
-  time[2] <- Sys.time() - time_rngr
+  # time
+  gof_out[2, 4] <- Sys.time() - time_rngr
+  
+  y_pred <- predict(obj_rngr, data = test_data)
+  
+  table(y_pred)
+  
+  # Compute the accuracy
+  acc <- cbind.data.frame(test$y, y_pred$predictions)
+  table(acc)
+  
+  gof_out[2, 1] <- sum(diag(table(acc)))/sum(table(acc))
+  
+  # compute the F1 Score
+  gof_out[2, 2] <- F1_Score(y_true = acc$`test$y`,
+                            y_pred = acc$y_pred)
+  
+  # Compute Fbeta Score
+  gof_out[2, 3] <- FBeta_Score(y_true = acc$`test$y`,
+                               y_pred = acc$y_pred,
+                               beta = f_beta)
   
   # Function caret
   time_crt <- Sys.time()
@@ -442,9 +479,30 @@ cv_rf <- function(train_data, test_data, mtry, ntree,
                           data = train_data,
                           ntree = ntree)
   
-  time[3] <- Sys.time() - time_crt
+  # time
+  gof_out[3, 4] <- Sys.time() - time_crt
   
-  time
+  y_pred <- predict(obj_crt, newdata = test_data)
+  
+  table(y_pred)
+  
+  # Compute the accuracy
+  acc <- cbind.data.frame(y, y_pred)
+  table(acc)
+  
+  gof_out[3, 1] <- sum(diag(table(acc)))/sum(table(acc))
+  
+  # compute the F1 Score
+  gof_out[3, 2] <- F1_Score(y_true = acc$`test$y`,
+                            y_pred = acc$y_pred)
+  
+  # Compute Fbeta Score
+  gof_out[3, 3] <- FBeta_Score(y_true = acc$`test$y`,
+                               y_pred = acc$y_pred,
+                               beta = f_beta)
+  
+  
+  gof_out
   
 }
 
