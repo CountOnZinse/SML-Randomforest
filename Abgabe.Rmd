@@ -1,7 +1,7 @@
 ---
-title: "Testing different packages including Randomforest"
+title: "Testing and comparing different R packages containing Randomforest"
 subtitle: "Packages: RandomForest, ranger & caret"
-author: "Steins, Patricia; Schröter, Timo; Zinsmeister, Philipp; Riedlmeier, Moritz"
+author: "Riedlmeier, Moritz; Schröter, Timo; Steins, Patricia; Zinsmeister, Philipp"
 date: "2024-06-11"
 output: html_notebook
 number_sections: true
@@ -9,9 +9,9 @@ number_sections: true
 
 ## Gliederung
 
-## Einleitung - Was ist ein Randomforest?
+## Einleitung - Was ist ein Randomforest? Motivation/Forschungsfrage
 
-## Wie ist ein Randomforest aufgebaut
+## Wie ist ein Randomforest aufgebaut/Theorie/Hypothesen
 
 ```{r setup, include=FALSE}
 
@@ -23,7 +23,7 @@ if (!require("hardhat")) {
   install.packages("hardhat")
 }
 
-# load the usefull packages
+# load the useful packages
 pacman::p_load(tidyverse, hardhat, purrr, MLmetrics, foreach, doParallel, tibble,
                paletteer)
 
@@ -65,3 +65,5 @@ plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+## Conclusion
