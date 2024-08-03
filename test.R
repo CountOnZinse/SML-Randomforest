@@ -1,10 +1,7 @@
 
 # Test-script #
 
-install.packages('hardhat_1.4.0.zip', repos = NULL)
-install.packages('tibble_3.2.1.zip', repos = NULL)
-
-# load the necessary packages
+# load the basic packages
 if (!require("pacman")) {
   install.packages("pacman")
 } 
@@ -12,9 +9,13 @@ if (!require("hardhat")) {
   install.packages("hardhat")
 }
 
-pacman::p_load(tidyverse, randomForest, randomForestSRC, ranger,
-               caret, hardhat, purrr, MLmetrics, foreach, doParallel, tibble,
+# load the usefull packages
+pacman::p_load(tidyverse, hardhat, purrr, MLmetrics, foreach, doParallel, tibble,
                paletteer)
+
+# load the packages with randomforest
+pacman::p_load(randomForest, randomForestSRC, ranger,
+               Rborist)
 
 
 # start of testing 
@@ -214,7 +215,9 @@ gen_dataset <- function(p, n, min_cor, max_cor, reg = F){
   y <- ifelse(y >= min(y) & y < -5, "Tanne",
               ifelse(y >= -5 & y < -1, "Esche",
                      ifelse(y >= -1 & y < 5, "Rotbuche",
-                            ifelse(y >= 5 & y < 20, "Eiche", "Kiefer"))))
+                            ifelse(y >= 5 & y < 20, "Eiche", 
+                                   ifelse(y >= 20 & y < 23, "Douglasie",
+                                          ifelse(y >= 23 & y < 37, "Buche", "Kiefer"))))))
   
   # beta weights 
   beta <- sample(seq(-1, 2, 0.1), p, replace = T)
@@ -256,6 +259,7 @@ cor(pop[, c(-1, -2)])
 str(pop)
 
 table(pop$y_sick)
+table(pop$y)
 
 # Sampling the data
 
@@ -379,22 +383,35 @@ obj_rf <- randomForest(y ~ .,
                        ntree = 200,
                        mtry = 4)
 
+out <- predict(obj_rf, data = test[, c(-1, -2)])
+
 obj_rngr <- ranger(y ~ .,
                    data = train[, -2],
                    num.trees = 200,
                    mtry = 4) 
 
-out <- predict(obj_rngr, data = test[, c(-1, -2)])
+out <- predict(obj_rngr, data = test[, c(-1, -2)])$predictions
 
-out$predictions
+out
 
-obj_crt <- caret::train(method = "rf",
-                        y ~ .,
-                        data = train[, -2],
-                        ntree = 200,
-                        tuneGrid = NULL)
+# caret is out 
 
-predict(obj_crt, newdata = test[, c(-1, -2)])
+#obj_crt <- caret::train(method = "rf",
+#                        y ~ .,
+#                        data = train[, -2],
+#                        ntree = 200,
+#                        tuneGrid = NULL)
+#
+#predict(obj_crt, newdata = test[, c(-1, -2)])
+
+obj_bor <- Rborist(y = train[, 1],
+                   train[, c(-1, -2)],
+                   nTree = 200,
+                   maxLeaf = 4)
+
+out <- predict(obj_bor, newdata = test[, c(-1, -2)])$yPred
+
+out
 
 # ---- Cross-Validation ----
 
@@ -418,7 +435,8 @@ cv_rf <- function(train_data, test_data, y, mtry, ntree,
   obj_rf <- randomForest(eval(parse(text = formula)),
                          data = train_data,
                          type = "classification",
-                         ntree = ntree)
+                         ntree = ntree,
+                         mtry = mtry)
   
   # time
   gof_out[1, 4] <- Sys.time() - time_rf
@@ -428,17 +446,17 @@ cv_rf <- function(train_data, test_data, y, mtry, ntree,
   table(y_pred)
   
   # Compute the accuracy
-  acc <- cbind.data.frame(test$y, y_pred)
+  acc <- cbind.data.frame(y, y_pred)
   table(acc)
   
   gof_out[1, 1] <- sum(diag(table(acc)))/sum(table(acc))
   
   # compute the F1 Score
-  gof_out[1, 2] <- F1_Score(y_true = acc$`test$y`,
+  gof_out[1, 2] <- F1_Score(y_true = acc$y,
                             y_pred = acc$y_pred)
   
   # Compute Fbeta Score
-  gof_out[1, 3] <- FBeta_Score(y_true = acc$`test$y`,
+  gof_out[1, 3] <- FBeta_Score(y_true = acc$y,
                                y_pred = acc$y_pred,
                                beta = f_beta)
   
@@ -447,42 +465,43 @@ cv_rf <- function(train_data, test_data, y, mtry, ntree,
   
   obj_rngr <- ranger(eval(parse(text = formula)),
                      data = train_data,
-                     num.trees = ntree)
+                     num.trees = ntree,
+                     mtry = mtry)
   
   # time
   gof_out[2, 4] <- Sys.time() - time_rngr
   
-  y_pred <- predict(obj_rngr, data = test_data)
+  y_pred <- predict(obj_rngr, data = test_data)$predictions
   
   table(y_pred)
   
   # Compute the accuracy
-  acc <- cbind.data.frame(test$y, y_pred$predictions)
+  acc <- cbind.data.frame(y, y_pred)
   table(acc)
   
   gof_out[2, 1] <- sum(diag(table(acc)))/sum(table(acc))
   
   # compute the F1 Score
-  gof_out[2, 2] <- F1_Score(y_true = acc$`test$y`,
+  gof_out[2, 2] <- F1_Score(y_true = acc$y,
                             y_pred = acc$y_pred)
   
   # Compute Fbeta Score
-  gof_out[2, 3] <- FBeta_Score(y_true = acc$`test$y`,
+  gof_out[2, 3] <- FBeta_Score(y_true = acc$y,
                                y_pred = acc$y_pred,
                                beta = f_beta)
   
   # Function caret
-  time_crt <- Sys.time()
+  time_bor <- Sys.time()
   
-  obj_crt <- caret::train(method = "rf",
-                          eval(parse(text = formula)),
-                          data = train_data,
-                          ntree = ntree)
+  obj_bor <- Rborist(y = train_data[, 1],
+                     train_data[, c(-1)],
+                     nTree = ntree,
+                     mtry = mtry)
   
   # time
-  gof_out[3, 4] <- Sys.time() - time_crt
+  gof_out[3, 4] <- Sys.time() - time_bor
   
-  y_pred <- predict(obj_crt, newdata = test_data)
+  y_pred <- predict(obj_bor, newdata = test_data)$yPred
   
   table(y_pred)
   
@@ -493,11 +512,11 @@ cv_rf <- function(train_data, test_data, y, mtry, ntree,
   gof_out[3, 1] <- sum(diag(table(acc)))/sum(table(acc))
   
   # compute the F1 Score
-  gof_out[3, 2] <- F1_Score(y_true = acc$`test$y`,
+  gof_out[3, 2] <- F1_Score(y_true = acc$y,
                             y_pred = acc$y_pred)
   
   # Compute Fbeta Score
-  gof_out[3, 3] <- FBeta_Score(y_true = acc$`test$y`,
+  gof_out[3, 3] <- FBeta_Score(y_true = acc$y,
                                y_pred = acc$y_pred,
                                beta = f_beta)
   
@@ -511,7 +530,7 @@ cv_rf <- function(train_data, test_data, y, mtry, ntree,
 
 # adjust the cores here - it depends on how many cores you have 
 # you should use at least 2 cores
-registerDoParallel(detectCores()/3)
+registerDoParallel(detectCores()-2)
 
 n_tree <- seq(100, 500, 100)
 mtry <- 2:8
@@ -522,15 +541,18 @@ grid_hp <- expand.grid(n_tree, mtry)
 out_fe <- foreach(i = 1:nrow(grid_hp),
                   .multicombine = T, # combine the results efficiently
                   .combine = "list", # way of binding
-                  .packages = c("randomForest", "ranger", "caret")) %dopar% { 
+                  .packages = c("randomForest", "ranger", "caret", "MLmetrics", "Rborist")) %dopar% { 
                     # load the packages for the function, otherwise error
-                    cv_rf(train_data = train[, -2], ntree = grid_hp[i, 1],
-                       mtry = grid_hp[i, 2], replace = NULL, formula = "y ~ .")
+                    cv_rf(train_data = train[, -2], y = test$y, test_data = test[, c(-1, -2)],
+                          ntree = grid_hp[i, 1], mtry = grid_hp[i, 2], 
+                          replace = NULL, formula = "y ~ .")
                   }
 
 registerDoParallel(1) # reset the cores
 
 out_fe
+
+
 
 
 
