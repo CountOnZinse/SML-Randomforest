@@ -1,0 +1,69 @@
+---
+title: "Testing and comparing different R packages containing Randomforest"
+subtitle: "Packages: RandomForest, ranger & caret"
+author: "Riedlmeier, Moritz; Schröter, Timo; Steins, Patricia; Zinsmeister, Philipp"
+date: "2024-06-11"
+output: html_notebook
+number_sections: true
+---
+
+## Gliederung
+
+## Einleitung - Was ist ein Randomforest? Motivation/Forschungsfrage
+
+## Wie ist ein Randomforest aufgebaut/Theorie/Hypothesen
+
+```{r setup, include=FALSE}
+
+# load the basic packages
+if (!require("pacman")) {
+  install.packages("pacman")
+} 
+if (!require("hardhat")) {
+  install.packages("hardhat")
+}
+
+# load the useful packages
+pacman::p_load(tidyverse, hardhat, purrr, MLmetrics, foreach, doParallel, tibble,
+               paletteer)
+
+# load the packages with randomforest
+pacman::p_load(randomForest, randomForestSRC, ranger,
+               caret)
+
+# generate function for simulating data
+
+# generate function for crossvalidation
+
+```
+
+## Aufbau der Studie
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+## Die unterschiedlichen packages:
+1. randomForest:
+Classification and regression based on a forest of trees using random inputs, based on Breiman (2001).
+2. ranger:
+A fast implementation of Random Forests, particularly suited for high dimensional data. Ensembles of classification, regression, survival and probability prediction trees are supported. 
+3. caret:
+Misc. functions for training and plotting classification and regression models.
+
+
+```{r cars}
+summary(cars)
+```
+
+## Analyse der Crossvalidation
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+## Conclusion
