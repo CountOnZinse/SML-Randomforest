@@ -1,17 +1,19 @@
 ---
 title: "Testing and comparing different R packages containing Randomforest"
-subtitle: "Packages: RandomForest, ranger & caret"
 author: "Riedlmeier, Moritz; Schröter, Timo; Steins, Patricia; Zinsmeister, Philipp"
-date: "2024-06-11"
-output: html_notebook
+date: "2024-08-13"
+output:
+  html_notebook: default
+  pdf_document: default
+subtitle: RandomForest, ranger & caret
 number_sections: true
 ---
 
-## Gliederung
+## Outline
 
-## Einleitung - Was ist ein Randomforest? Motivation/Forschungsfrage
+## Introduction - What is a random forest? Motivation/research question
 
-## Wie ist ein Randomforest aufgebaut/Theorie/Hypothesen
+## How is a random forest structured/theory/hypotheses
 
 ```{r setup, include=FALSE}
 
@@ -37,13 +39,16 @@ pacman::p_load(randomForest, randomForestSRC, ranger,
 
 ```
 
-## Aufbau der Studie
+## Organisation of the study
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+In line with our research question, we use empirical and simulated multinomial data and will use different Random Forests implementations to classify this data. Since our goal is to compare different R packages, we will consider different goodness of fit measures after classification and evaluate the performance of the R packages in this way.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+### Preparing the data
 
-## Die unterschiedlichen packages:
+For our analysis, we use empirical data on the one hand. The data set originally stems from (...) and contains data on cover tree types. In forestry, a cover tree type is determined by the most prevalent tree type in a certain forest area (REFERENCE). Since the data set contains not only a large amount of observations but also many predictors, it is suitable for the use in our study.
+On the other hand, we simulated data for which we also aimed at getting a large number of observations and predictors. (DESCRIPTION OF HOW THE DATA WERE SIMLUATED)
+
+## The different packages
 1. randomForest:
 Classification and regression based on a forest of trees using random inputs, based on Breiman (2001).
 2. ranger:
@@ -51,19 +56,6 @@ A fast implementation of Random Forests, particularly suited for high dimensiona
 3. caret:
 Misc. functions for training and plotting classification and regression models.
 
-
-```{r cars}
-summary(cars)
-```
-
-## Analyse der Crossvalidation
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Analysis of the cross-validation
 
 ## Conclusion
