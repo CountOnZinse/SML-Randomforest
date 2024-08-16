@@ -46,7 +46,8 @@ In line with our research question, we use empirical and simulated multinomial d
 ### Preparing the data
 
 For our analysis, we use empirical data on the one hand. The data set originally stems from (...) and contains data on cover tree types. In forestry, a cover tree type is determined by the most prevalent tree type in a certain forest area (REFERENCE). Since the data set contains not only a large amount of observations but also many predictors, it is suitable for the use in our study.
-On the other hand, we simulated data for which we also aimed at getting a large number of observations and predictors. (DESCRIPTION OF HOW THE DATA WERE SIMLUATED)
+On the other hand, we simulated data for which we also aimed at getting a large number of observations and predictors.
+In the following, we describe the simulation of the second data set we use in the analysis. Randomly, we draw from different (WHICH?) distributions to get artificial multinomial data and predictor variables. The simulated multinomial data then consists of (HOW MANY) different tree types, on the one hand. On the other hand, we arrive at a large number of predictors. Moreover, we included correlations between the predictors in the simulation process as we would find these in an empirical data set.(HOW DID WE INCLUDE THE CORRELATIONS)
 
 ## The different packages
 1. randomForest:
