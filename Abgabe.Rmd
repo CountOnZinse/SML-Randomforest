@@ -8,7 +8,7 @@ output:
     number_sections: true
     theme: cosmo
   pdf_document: default
-subtitle: RandomForest, ranger & caret
+subtitle: RandomForest, Ranger and Party
 bibliography: references.bib
 ---
 
