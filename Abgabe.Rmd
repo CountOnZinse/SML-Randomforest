@@ -6,17 +6,17 @@ output:
   html_notebook: 
     toc: true
     number_sections: true
-    theme: simplex
+    theme: bootstrap
   pdf_document: default
 subtitle: RandomForest, ranger & caret
 bibliography: references.bib
 ---
 
-# Introduction: What is a random forest? Motivation/research question
+# Introduction: Motivation/research question
 
-# How is a random forest structured/theory/hypotheses
+# What is a random forest? How is a random forest structured/theory/hypotheses
 
-```{r setup, include=FALSE}
+```{r setup PROPABLY NOT NEEDED AT THIS POINT, include=FALSE}
 
 # load the basic packages
 if (!require("pacman")) {
@@ -40,21 +40,35 @@ pacman::p_load(randomForest, randomForestSRC, ranger,
 
 ```
 
-# Organisation of the study
+# Data & method
 
-In line with the research question, empirical and simulated multinomial data is used while drawing on different implementations of the Random Forests algorithm to classify this data. Since the focus lies on comparing different R packages, different goodness of fit measures are considered after classification to therefore evaluate the performance of the R packages.
+## Organisation of the study
 
-# Preparing the data
+In line with the research question, empirical and simulated multinomial data is used while drawing on different implementations of the Random Forests algorithm to classify this data. Since the focus lies on comparing different R packages, different goodness of fit measures are considered after classification to evaluate the performance of the R packages.
 
-For the analysis, on the one hand, empirical data is used. The data set originally stems from (...) and contains data on cover tree types. In forestry, a cover tree type is determined by the most prevalent tree type in a certain forest area (REFERENCE). Since the data set contains not only a large amount of observations but also many predictors, it is suitable for the use in the study. On the other hand, simulated data was used for which it is also aimed at arriving at a large number of observations and predictors. In the following, the simulation of the second data set is described which is used in the analysis. Randomly, it is drawn from different (WHICH?) distributions to get artificial multinomial data and predictor variables. The simulated multinomial data then consists of (HOW MANY) different tree types, on the one hand. On the other hand, a large number of predictors is obtained. Moreover, correlations between the predictors were included in the simulation process as these would be found in an empirical data set.(HOW DID WE INCLUDE THE CORRELATIONS)
+## Data preparation
 
-# The different packages
+For the analysis, on the one hand, empirical data is used. The data set originally stems from (...) and contains data on cover tree types. In forestry, a cover tree type is determined by the most prevalent tree type in a certain forest area **(REFERENCE)**. Since the data set contains not only a large amount of observations but also many predictors, it is suitable for the use in the study. On the other hand, simulated data was used for which it is also aimed at arriving at a large number of observations and predictors. In the following, the simulation of the second data set is described which is used in the analysis. To get artificial multinomial data and predictor variables, random draws from different distributions **(WHICH)** are used. The simulated multinomial data then consists of **(HOW MANY)** different tree types, on the one hand. On the other hand, a large number of predictors is obtained. Moreover, correlations between the predictors were included in the simulation process as these would be found in an empirical data set.**(HOW DID WE INCLUDE THE CORRELATIONS)**
 
-1.  randomForest: Classification and regression based on a forest of trees using random inputs, based on [@breiman2001].
-2.  ranger: A fast implementation of Random Forests, particularly suited for high dimensional data. Ensembles of classification, regression, survival and probability prediction trees are supported.
-3.  caret: Misc. functions for training and plotting classification and regression models.
+## The different packages
 
-# Cross-validation
+As the focus in this study lies on comparing different R packages, a short introduction to each of the packages is needed. Each package has its own underlying philosophy. First, the *randomForest*-package is described, followed by *ranger* and lastly, the *party*-package [@hothorn2005] is introduced.
+
+### randomForest
+
+The package *randomForest* draws on the original algorithm described in [@breiman2001] and originally published in Fortran [@breiman2002]. The type of dependent variable which is to be predicted determines whether classification or regression is performed using the random forest algorithm. In addition, various hyperparameters of the algorithm can be defined: for example, it is possible to specify how many variables are randomly selected at each split of the single trees (hyperparameter $mtry$). Moreover, mathematically interesting is the use of $\sqrt p$ as the default hyperparameter in classification. The *randomForest*-package can be regarded as one of the standard packages implementing the random forest algorithm, which is one of the reasons for using the package in this study.
+
+### ranger
+
+A fast implementation of Random Forests, particularly suited for high dimensional data. Ensembles of classification, regression, survival and probability prediction trees are supported.
+
+### party
+
+see [@hothorn2005]
+
+## Cross-validation
+
+Cross validation to arrive at a Random Forest with the optimal parameters for each type of data (empirical vs. simulated)
 
 # Results
 
