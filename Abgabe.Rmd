@@ -6,7 +6,7 @@ output:
   html_notebook: 
     toc: true
     number_sections: true
-    theme: bootstrap
+    theme: cosmo
   pdf_document: default
 subtitle: RandomForest, ranger & caret
 bibliography: references.bib
