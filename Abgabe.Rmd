@@ -45,7 +45,8 @@ pacman::p_load(randomForest, randomForestSRC, ranger,
 
 ## Organisation of the study
 
-In line with the research question, empirical and simulated multinomial data is used while drawing on different implementations of the Random Forests algorithm to classify this data. Since the focus lies on comparing different R packages, different goodness of fit measures are considered after classification to evaluate the performance of the R packages.
+In line with the research question, empirical and simulated multinomial data is used while drawing on different implementations of the Random Forests algorithm to classify this data. Since the focus lies on comparing different R packages, different goodness of fit measures are considered after classification to evaluate the performance of the R packages. 
+On the basis of the theory and the available information on the packages, it is expected that the Random Forests implementations perform similar across the different packages.
 
 ## Data preparation
 
