@@ -10,6 +10,7 @@ output:
   pdf_document: default
 subtitle: RandomForest, ranger & party
 bibliography: references.bib
+link-citations: true
 ---
 
 # Introduction: Motivation/research question
@@ -66,7 +67,7 @@ A fast implementation of Random Forests, particularly suited for high dimensiona
 
 ### party
 
-see [@hothorn2005]
+The documentation of the *party*-package states differences to the *randomForest*-package in the basic implementation, i.e. different base learners were used [@hothorn2005, p. 6]. Whereas the *randomForest*-package draws on Classification and Regression Trees (CART) to form a random forest, the *party*-package utilizes conditional inference trees designed to prevent overfitting and **?variable selection bias?** while combining statistical testing and the basic ideas of CART [@hothorn2006]. Also, the default of the hyperparameters are slightly different to the *randomForest*-package. For example, the default value of $mtry$ equals $5$ while in *randomForest* $\sqrt p$ is specified.
 
 ## Cross-validation
 
