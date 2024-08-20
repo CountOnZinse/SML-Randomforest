@@ -18,91 +18,17 @@ pacman::p_load(randomForest, randomForestSRC, ranger,
                party)
 
 
-source("Rjungle.R")
 source("own_functions.R")
 
 ####################### Doing the actual work ##################################
 
 ############################# Classification ###################################
 
-# ---- binomial Analysis ---- 
-
-set.seed(1234)
-
-pop <- gen_dataset(p = 44, n = 100000,
-                   min_cor = -0.3,
-                   max_cor = 0.5)
-
-cor(pop[, c(-1, -2)])
-
-str(pop)
-
-table(pop$y_sick)
-table(pop$y)
-
-# Sampling the data
-
-sample_data <- pop[sample(1:nrow(pop), 20000), ]
-
-table(sample_data$y_sick)
-
-idx <- sample(1:nrow(sample_data), 0.8*20000)
-
-train <- sample_data[idx, ]
-test <- sample_data[-idx, ]
-
-table(train$y_sick)
-table(test$y_sick)
-
-# Random Forest
-
-rf_model <- randomForest(y_sick ~ .,
-                         data = train[, -1],
-                         type = "classification",
-                         ntree = 200)
-
-plot(getTree(rf_model, 3))
-
-y_pred <- predict(rf_model, newdata = test[, c(-1, -2)])
-
-table(y_pred)
-
-# Compute the accuracy
-acc <- cbind.data.frame(test$y_sick, y_pred)
-table(acc)
-
-sum(diag(table(acc)))/sum(table(acc))
-
-# Compute F1 Score
-F1_Score(y_true = acc$`test$y_sick`,
-         y_pred = acc$y_pred)
-
-# Compute Fbeta Score
-FBeta_Score(y_true = acc$`test$y_sick`,
-            y_pred = acc$y_pred,
-            beta = 0.5)
-
-
-
-
-
-
-
-# Random Forest SRC
-
-rfsrc_model <- randomForestSRC::rfsrc(y_sick ~ .,
-                                   data = train[, c(-1)],
-                                   type = "classification",
-                                   ntree = 200)
-
-
-# ---- multinomial Analysis ----
-
 set.seed(1234)
 
 # create dataset
 
-pop <- gen_dataset(p = 40, n = 100000,
+pop <- gen_dataset(p = 54, n = 580000,
                    min_cor = -0.3,
                    max_cor = 0.5)
 
@@ -207,7 +133,8 @@ cv_rf <- function(train_data, test_data, y, mtry, ntree,
   # Function caret
   time_bor <- Sys.time()
   
-  obj_crf <- cforest(formula = y ~ ., data = train_data, 
+  obj_crf <- cforest(formula = eval(parse(text = formula)),
+                     data = train_data, 
                      controls = cforest_unbiased(ntree = ntree, 
                                                  mtry = mtry))
   
@@ -246,8 +173,8 @@ cv_rf <- function(train_data, test_data, y, mtry, ntree,
 # you should use at least 2 cores
 registerDoParallel(detectCores()-2)
 
-n_tree <- seq(100, 500, 100)
-mtry <- 2:8
+n_tree <- seq(300, 700, 100)
+mtry <- 4:10
 
 # grid with all the hyperparameters
 grid_hp <- expand.grid(n_tree, mtry)
@@ -305,25 +232,44 @@ gof_data[[3]] <- lapply(out_fe, function(x) x[, 3]) %>%
 
 names(gof_data[[3]])[1] <- "value" 
 
+# Time
+gof_data[[4]] <- lapply(out_fe, function(x) x[, 4]) %>% 
+  unlist() %>% 
+  cbind() %>% 
+  data.frame(value = ., Package = rep(c("RandomForest", "Ranger", "Party"), 
+                                      length(out_fe)),
+             Iteration = rep(1:length(out_fe), each = 3))
+
+names(gof_data[[4]])[1] <- "value" 
+
 # ---- plot it ----
 
 
 gof_plot <- list()
 
-gof_name <- c("Accuracy", "F1 Score", "F-beta Score")
+gof_name <- c("Accuracy", "F1 Score", "F-beta Score", "Time")
 
 for (i in 1:length(gof_data)){
   
-  gof_plot[[i]] <- ggplot(data = gof_data[[1]],
+  gof_plot[[i]] <- ggplot(data = gof_data[[i]],
                           aes(x = Iteration,
                               y = value,
                               group = Package,
                               col = Package)) +
     geom_point() +
-    labs(title = gof_name[i])
+    scale_color_manual(values = c("RandomForest" = "green",
+                                  "Ranger" = "red", 
+                                  "Party" = "blue")) +
+    labs(title = gof_name[i],
+         subtitle = "Changing the parameters ntree and mtry at each step",
+         x = "Step",
+         y = "Value") 
+  
+  ggsave(paste0("pics/", "GoF_", gof_name[i], ".png"),
+         gof_plot[[i]],
+         device = "png")
   
 }
-
 
 gof_plot[3]
 
