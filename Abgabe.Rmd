@@ -57,7 +57,7 @@ As the focus in this study lies on comparing different R packages, a short intro
 
 ### randomForest
 
-The package *randomForest* draws on the original algorithm described in [@breiman2001] and originally published in Fortran [@breiman2002]. The type of dependent variable which is to be predicted determines whether classification or regression is performed using the random forest algorithm. In addition, various hyperparameters of the algorithm can be defined: for example, it is possible to specify how many variables are randomly selected at each split of the single trees (hyperparameter `mtry`). Moreover, mathematically interesting is the use of $\sqrt p$ as the default hyperparameter in classification. The *randomForest*-package can be regarded as one of the standard packages implementing the random forest algorithm, which is one of the reasons for using the package in this study.
+The package *randomForest* draws on the original algorithm described in @breiman2001 and originally published in Fortran [@breiman2002]. The type of dependent variable which is to be predicted determines whether classification or regression is performed using the random forest algorithm. In addition, various hyperparameters of the algorithm can be defined: for example, it is possible to specify how many variables are randomly selected at each split of the single trees (hyperparameter `mtry`). Moreover, mathematically interesting is the use of $\sqrt p$ as the default hyperparameter in classification. The *randomForest*-package can be regarded as one of the standard packages implementing the random forest algorithm, which is one of the reasons for using the package in this study.
 
 ### ranger
 
@@ -69,9 +69,11 @@ The documentation of the *party*-package states differences to the *randomForest
 
 ## Cross-validation
 
-Cross validation to arrive at a Random Forest with the optimal parameters for each type of data (empirical vs. simulated)
+For the cross-validation, a function `cv_rf` is created to apply classification by the Random Forests algorithm, while drawing on the methods implemented in the R packages described in section 3.3: `randomForest`, `ranger`, and `cforest`. With `cv_rf`, the models' performance based on accuracy, F1 score, and F-beta score, while also recording the computational time taken to fit each model.
 
-The cross-validation algorithm consists of several steps: First,
+By using parallelization techniques, various hyperparameter combinations (`ntree` and `mtry` are efficiently tested. The function is run across all combinations while collecting the results for further analysis.
+
+The cross-validation is targeted at obtaining the optimal hyperparameter combinations as measured in different goodness-of-fit indicators for each type of data, empirical as well as simulated data,.
 
 # Results
 
