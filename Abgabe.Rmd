@@ -1,5 +1,5 @@
 ---
-title: "Testing and comparing different R packages on Random Forest"
+title: "Testing and comparing different R packages on random forest algorithm"
 author: "Riedlmeier, Moritz; Schröter, Timo; Steins, Patricia; Zinsmeister, Philipp"
 date: "August 30, 2024"
 output:
