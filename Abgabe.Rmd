@@ -8,7 +8,7 @@ output:
     number_sections: true
     theme: cosmo
   pdf_document: default
-subtitle: RandomForest, Ranger and Party
+subtitle: RandomForest, ranger & caret
 bibliography: references.bib
 ---
 
@@ -48,7 +48,7 @@ In line with the research question, empirical and simulated multinomial data is 
 
 ## Data preparation
 
-For the analysis, on the one hand, empirical data is used. The data set originally stems from (...) and contains data on cover tree types. In forestry, a cover tree type is determined by the most prevalent tree type in a certain forest area **(REFERENCE)**. Since the data set contains not only a large amount of observations but also many predictors, it is suitable for the use in the study. On the other hand, simulated data was used for which it is also aimed at arriving at a large number of observations and predictors. In the following, the simulation of the second data set is described which is used in the analysis. To get artificial multinomial data and predictor variables, random draws from different distributions **(WHICH)** are used. The simulated multinomial data then consists of **(HOW MANY)** different tree types, on the one hand. On the other hand, a large number of predictors is obtained. Moreover, correlations between the predictors were included in the simulation process as these would be found in an empirical data set.**(HOW DID WE INCLUDE THE CORRELATIONS)**
+For the analysis, on the one hand, empirical data is used. The data set originally stems from **(...)** and contains data on cover tree types. In forestry, a cover tree type is determined by the most prevalent tree type in a certain forest area **(REFERENCE)**. Since the data set contains not only a large amount of observations but also many predictors, it is suitable for the use in the study. On the other hand, simulated data was used for which it is also aimed at arriving at a large number of observations and predictors. In the following, the simulation of the second data set is described which is used in the analysis. To get artificial multinomial data and predictor variables, random draws from different ?probability density distributions?, including the normal, the beta and the uniform distribution, are used. The simulated multinomial data then consists of seven different tree types, on the one hand. On the other hand, a large number of predictors is obtained. Moreover, correlations between the predictors were included in the simulation process as these are expected to be found in an empirical data set.**(HOW DID WE INCLUDE THE CORRELATIONS)**
 
 ## The different packages
 
