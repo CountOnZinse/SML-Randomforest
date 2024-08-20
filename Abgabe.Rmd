@@ -3,7 +3,7 @@ title: "Testing and comparing different R packages on random forest algorithm"
 author: "Riedlmeier, Moritz; Schröter, Timo; Steins, Patricia; Zinsmeister, Philipp"
 date: "August 30, 2024"
 output:
-  html_notebook: 
+  html_notebook:
     toc: true
     number_sections: true
     theme: cosmo
