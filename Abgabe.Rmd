@@ -13,38 +13,14 @@ bibliography: references.bib
 link-citations: true
 ---
 
-# Introduction: Motivation/research question
-Data scientists and analysts often face datasets with a large number of variables and observations. This requires not only increasingly computational power, but also more efficient methods to handle high-dimensional data and make more accurate variable selection processes to improve predictions. For this purpose, different machine learning methods like random forests and decision trees have been developed. They were first introduced in 1984 by Breiman et al. He also invented the term of classification and regression trees (CART). Nowadays, trees and forests are commonly used procedures to build models for predictions of a variable of interest based on several input variables. They are implemented into statistical software like RStudio with different packages.
+# Introduction
+Data scientists and analysts often face datasets with a large number of variables and observations. This requires not only increasing computational power, but also more efficient methods to handle high-dimensional data and make more accurate variable selection processes to improve predictions. For this purpose, different machine learning methods like random forests and decision trees have been developed. They were first introduced in 1984 by Breiman et al. He also invented the term of classification and regression trees (CART). Nowadays, trees and forests are commonly used procedures to build models for predictions of a variable of interest based on several input variables. They are implemented into statistical software like RStudio with different packages.
 
-In this paper, three different packages for RStudio that offer solutions for random forests get analyzed. For this purpose, the two most popular packages called “randomForest” and “Ranger” were chosen. Furthermore, “Party” was added to the repertoire which includes different functions for recursive partitioning. The mentioned packages are benchmarked in terms of their computational performance and their prediction quality. The goal of this paper is to provide an empirical foundation for the decision of the mentioned R packages. The preselection of the packages is necessary and based on research. It will be taken up in a dedicated chapter of this paper.
+In this paper, three different packages for RStudio that offer solutions for random forests are analyzed. For this purpose, the two most popular packages called “randomForest” and “Ranger” were chosen. Furthermore, “Party” was added to the repertoire which includes different functions for recursive partitioning. The mentioned packages are benchmarked in terms of their computational performance and their prediction quality. The goal of this paper is to provide an empirical foundation for the decision of the mentioned R packages. The preselection of the packages is necessary and based on research. It will be taken up in a dedicated chapter of this paper.
 
 Before the comparison of the packages, the theory behind random forests will be covered. Since random forests require knowledge about CART, the intuition of trees and how they are grown in terms of machine learning will be described, too. After that the reader will find details about the comparison of the packages, as well as R-code and information about the procedure. Finally, the results will be summarized and concluded with recommendations for different use-cases of random forests.
 
 # What is a random forest? How is a random forest structured/theory/hypotheses
-
-```{r setup PROPABLY NOT NEEDED AT THIS POINT, include=FALSE}
-
-# load the basic packages
-if (!require("pacman")) {
-  install.packages("pacman")
-} 
-if (!require("hardhat")) {
-  install.packages("hardhat")
-}
-
-# load the useful packages
-pacman::p_load(tidyverse, hardhat, purrr, MLmetrics, foreach, doParallel, tibble,
-               paletteer)
-
-# load the packages with randomforest
-pacman::p_load(randomForest, randomForestSRC, ranger,
-               caret)
-
-# generate function for simulating data
-
-# generate function for crossvalidation
-
-```
 
 # Data & method
 
