@@ -1,19 +1,23 @@
 ---
-title: "Testing and comparing different R packages containing Randomforest"
-subtitle: "Packages: RandomForest, ranger & caret"
+title: "Testing and comparing different R packages on random forest algorithm"
 author: "Riedlmeier, Moritz; Schröter, Timo; Steins, Patricia; Zinsmeister, Philipp"
-date: "2024-06-11"
-output: html_notebook
-number_sections: true
+date: "August 30, 2024"
+output:
+  html_notebook:
+    toc: true
+    number_sections: true
+    theme: cosmo
+  pdf_document: default
+subtitle: RandomForest, ranger & party
+bibliography: references.bib
+link-citations: true
 ---
 
-## Gliederung
+# Introduction: Motivation/research question
 
-## Einleitung - Was ist ein Randomforest? Motivation/Forschungsfrage
+# What is a random forest? How is a random forest structured/theory/hypotheses
 
-## Wie ist ein Randomforest aufgebaut/Theorie/Hypothesen
-
-```{r setup, include=FALSE}
+```{r setup PROPABLY NOT NEEDED AT THIS POINT, include=FALSE}
 
 # load the basic packages
 if (!require("pacman")) {
@@ -37,33 +41,43 @@ pacman::p_load(randomForest, randomForestSRC, ranger,
 
 ```
 
-## Aufbau der Studie
+# Data & method
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## Organisation of the study
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+In line with the research question, empirical and simulated multinomial data is used while drawing on different implementations of the Random Forests algorithm to classify this data. Since the focus lies on comparing different R packages, different goodness of fit measures are considered after classification to evaluate the performance of the R packages. 
+On the basis of the theory and the available information on the packages, it is expected that the Random Forests implementations perform similar across the different packages.
 
-## Die unterschiedlichen packages:
-1. randomForest:
-Classification and regression based on a forest of trees using random inputs, based on Breiman (2001).
-2. ranger:
-A fast implementation of Random Forests, particularly suited for high dimensional data. Ensembles of classification, regression, survival and probability prediction trees are supported. 
-3. caret:
-Misc. functions for training and plotting classification and regression models.
+## Data preparation
 
+For the analysis, on the one hand, empirical data is used. The data set originally stems from a project at the Colorado State University and was later donated to the UC Irvine Machine Learning Repository [@blackard]. The data set contains data on cover tree types and surrounding characteristics. In forestry, a cover tree type is determined by the most prevalent tree type in a certain forest area [@gislason2006]. Since the data set contains not only a large amount of observations but also many predictors, it is suitable for the use in the study. As the format of the data set matches the use in the study, the preparation of the data was only made on a small scale. <br><br> On the other hand, simulated data was used for which it is also aimed at arriving at a large number of observations and predictors. In the following, the simulation of the second data set is described where this study draws on the specifically for this purpose created function `gen_dataset`. To get artificial multinomial data and predictor variables, random draws from different **?probability density distributions?**, including the normal, the beta and the uniform distribution, are used. The simulated multinomial data then consists of seven different tree types, on the one hand. On the other hand, a large number of predictors is obtained. Moreover, correlations between the predictors were included in the simulation process as these are expected to be found in an empirical data set. The code generates a vector of random values between `min_cor` and `max_cor` which are both specified manually in advance. It then assigns a random index from remaining variables for each variable to create correlations. Afterwards, observations are selected based on the absolute value of the correlation. If the correlation is positive, the values of the variable are positively correlated with the chosen variable; if negative, they are negatively correlated.
 
-```{r cars}
-summary(cars)
-```
+## The different packages
 
-## Analyse der Crossvalidation
+As the focus in this study lies on comparing different R packages, a short introduction to each of the packages is needed. Each package has its own underlying philosophy. First, the *randomForest*-package is described, followed by *ranger* and lastly, the *party*-package [@hothorn2005] is introduced.
 
-You can also embed plots, for example:
+### randomForest
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+The package *randomForest* draws on the original algorithm described in @breiman2001 and originally published in Fortran [@breiman2002]. The type of dependent variable which is to be predicted determines whether classification or regression is performed using the random forest algorithm. In addition, various hyperparameters of the algorithm can be defined: for example, it is possible to specify how many variables are randomly selected at each split of the single trees (hyperparameter `mtry`). Moreover, mathematically interesting is the use of $\sqrt p$ as the default hyperparameter in classification. The *randomForest*-package can be regarded as one of the standard packages implementing the random forest algorithm, which is one of the reasons for using the package in this study.
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+### ranger
 
-## Conclusion
+A fast implementation of Random Forests, particularly suited for high dimensional data. Ensembles of classification, regression, survival and probability prediction trees are supported.
+
+### party
+
+The documentation of the *party*-package states differences to the *randomForest*-package in the basic implementation, i.e. different base learners were used [@hothorn2005, p. 6]. Whereas the *randomForest*-package draws on Classification and Regression Trees (CART) to form a random forest, the *party*-package utilizes conditional inference trees designed to prevent overfitting and **?variable selection bias?** while combining statistical testing and the basic ideas of CART [@hothorn2006]. Also, the default of the hyperparameters are slightly different to the *randomForest*-package. For example, the default value of `mtry` equals $5$ while in *randomForest* $\sqrt p$ is specified.
+
+## Cross-validation
+
+For the cross-validation, a function `cv_rf` is created to apply classification by the Random Forests algorithm, while drawing on the methods implemented in the R packages described in section 3.3: `randomForest`, `ranger`, and `cforest`. With `cv_rf`, the models' performance based on accuracy, F1 score, and F-beta score, while also recording the computational time taken to fit each model.
+
+By using parallelization techniques, various hyperparameter combinations (`ntree` and `mtry` are efficiently tested. The function is run across all combinations while collecting the results for further analysis.
+
+The cross-validation is targeted at obtaining the optimal hyperparameter combinations as measured in different goodness-of-fit indicators for each type of data, empirical as well as simulated data,.
+
+# Results
+
+# Conclusion
+
+# References
