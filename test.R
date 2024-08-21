@@ -1,4 +1,3 @@
-
 # Test-script #
 
 # load the basic packages
@@ -326,8 +325,6 @@ for (i in 1:length(gof_data)){
 
 
 gof_plot[3]
-
-
 
 
 
