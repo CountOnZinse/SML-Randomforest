@@ -31,7 +31,7 @@ n <- 100000
 
 # create dataset
 
-pop <- gen_dataset(p = 40, n = n,
+pop <- gen_dataset(p = 54, n = n,
                    min_cor = -0.3,
                    max_cor = 0.5)
 
