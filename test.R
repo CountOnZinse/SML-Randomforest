@@ -17,7 +17,6 @@ pacman::p_load(randomForest, randomForestSRC, ranger,
                party)
 
 
-source("Rjungle.R")
 source("own_functions.R")
 
 ####################### Doing the actual work ##################################
@@ -109,7 +108,8 @@ cv_rf <- function(train_data, test_data, y, mtry, ntree,
   obj_rngr <- ranger(eval(parse(text = formula)),
                      data = train_data,
                      num.trees = ntree,
-                     mtry = mtry)
+                     mtry = mtry,
+                     num.threads = 1)
   
   # time
   gof_out[2, 4] <- Sys.time() - time_rngr
@@ -176,8 +176,8 @@ cv_rf <- function(train_data, test_data, y, mtry, ntree,
 # you should use at least 2 cores
 registerDoParallel(detectCores()-4)
 
-n_tree <- seq(300, 700, 100)
-mtry <- 4:10
+n_tree <- seq(100, 200, 100)
+mtry <- 4:5
 
 # grid with all the hyperparameters
 grid_hp <- expand.grid(n_tree, mtry)
