@@ -8,7 +8,7 @@ output:
     toc: true
     number_sections: true
     theme: cosmo
-subtitle: RandomForest, ranger & party
+subtitle: RandomForest, Ranger and Party
 bibliography: references.bib
 link-citations: true
 ---
