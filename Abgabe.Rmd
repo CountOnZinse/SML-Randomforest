@@ -1,5 +1,5 @@
 ---
-title: "Testing and comparing different R packages on random forest algorithm"
+title: "Testing and Comparing Different R Packages on Random Forest Algorithm"
 author: "Riedlmeier, Moritz; Schröter, Timo; Steins, Patricia; Zinsmeister, Philipp"
 date: "August 30, 2024"
 output:
@@ -46,33 +46,33 @@ By averaging the predictions of multiple trees, Random Forests tend to achieve h
 Random forests have a couple of disadvantages though. First, training a large number of trees can lead to tremendous need of computational resources, especially with high-dimensional data, where random forests are designed for. Since random forests require storing multiple trees, they can be particularly memory-intensive. Furthermore, while individual decision trees are easy to interpret, fandom forests, are more complex and less transparent. For the overall model it's harder to trace the exact decision-making process [@https://doi.org/10.1007/978-1-0716-1418-1, @https://doi.org/10.1023/A:1010933404324 , @https://doi.org/10.1007/978-0-387-84858-7 ].
 
 
-# Data & method
+# Data and Method
 
-## Organisation of the study
+## Organisation of The Study
 
 In line with the research question, empirical and simulated multinomial data is used while drawing on different implementations of the Random Forests algorithm to classify this data. Since the focus lies on comparing different R packages, different goodness of fit measures are considered after classification to evaluate the performance of the R packages. On the basis of the theory and the available information on the packages, it is expected that the Random Forests implementations perform similar across the different packages.
 
-## Data preparation
+## Data Preparation
 
 For the analysis, on the one hand, empirical data is used. The data set originally stems from a project at the Colorado State University and was later donated to the UC Irvine Machine Learning Repository [@blackard]. The data set contains data on cover tree types and surrounding characteristics. In forestry, a cover tree type is determined by the most prevalent tree type in a certain forest area [@gislason2006]. Since the data set contains not only a large amount of observations but also many predictors, it is suitable for the use in the study. As the format of the data set matches the use in the study, the preparation of the data was only made on a small scale. <br><br> On the other hand, simulated data was used for which it is also aimed at arriving at a large number of observations and predictors. In the following, the simulation of the second data set is described where this study draws on the specifically for this purpose created function `gen_dataset`. To get artificial multinomial data and predictor variables, random draws from different **?probability density distributions?**, including the normal, the beta and the uniform distribution, are used. The simulated multinomial data then consists of seven different tree types, on the one hand. On the other hand, a large number of predictors is obtained. Moreover, correlations between the predictors were included in the simulation process as these are expected to be found in an empirical data set. The code generates a vector of random values between `min_cor` and `max_cor` which are both specified manually in advance. It then assigns a random index from remaining variables for each variable to create correlations. Afterwards, observations are selected based on the absolute value of the correlation. If the correlation is positive, the values of the variable are positively correlated with the chosen variable; if negative, they are negatively correlated.
 
-## The different packages
+## The Different Packages
 
 As the focus in this study lies on comparing different R packages, a short introduction to each of the packages is needed. Each package has its own underlying philosophy. First, the *randomForest*-package is described, followed by *ranger* and lastly, the *party*-package [@hothorn2005] is introduced.
 
-### randomForest
+### RandomForest
 
 The package *randomForest* draws on the original algorithm described in @breiman2001 and originally published in Fortran [@breiman2002]. The type of dependent variable which is to be predicted determines whether classification or regression is performed using the random forest algorithm. In addition, various hyperparameters of the algorithm can be defined: for example, it is possible to specify how many variables are randomly selected at each split of the single trees (hyperparameter `mtry`). Moreover, mathematically interesting is the use of $\sqrt p$ as the default hyperparameter in classification. The *randomForest*-package can be regarded as one of the standard packages implementing the random forest algorithm, which is one of the reasons for using the package in this study.
 
-### ranger
+### Ranger
 
 The package random forest generator (known as “Ranger”) package is an implementation for random forests with optimizations for high dimensional data in R. The developers Wright and Ziegler (2017: 2) claim to provide a package which is comparable simple to use. The package is optimized by extensive memory profiling for different types of input data. In contrast to the package Willows, Ranger is able to handle a larger number of features at the same time. As a random forest is proceeded in R, all values of all features of mtry are splitting candidates. Since the required computational power increases exponentially with added features, this is the bottleneck for many random forest packages and the developers of the ranger package focused on this problem. The ranger() function is used to grow a forest and makes use of two different algorithms for the splitting process. At first, the feature values are sorted and accessed by their index. In the second algorithm, the values are sorted and retrieved while splitting. Other than the package RandomForest, Ranger is license free and the software is open-source released which improves traceability of the functions for users on the one hand and accessible for implementation of new features by other developers on the other hand (Wright and Ziegler, 2017: 2 f.). It stands out, that the code for ranger is written in C++ and uses standard libraries only. C++ is described as a low-level language, which expresses in a machine-oriented design and more efficient use of memory (Haidl and Gorlatch, 2018). This makes parallel processing available and considerably accelerates the runtime. Besides from CART, survival trees are also supported by the ranger package.
 
-### party
+### Party
 
 The documentation of the *party*-package states differences to the *randomForest*-package in the basic implementation, i.e. different base learners were used [@hothorn2005, p. 6]. Whereas the *randomForest*-package draws on Classification and Regression Trees (CART) to form a random forest, the *party*-package utilizes conditional inference trees designed to prevent overfitting and **?variable selection bias?** while combining statistical testing and the basic ideas of CART [@hothorn2006]. Also, the default of the hyperparameters are slightly different to the *randomForest*-package. For example, the default value of `mtry` equals $5$ while in *randomForest* $\sqrt p$ is specified.
 
-## Cross-validation
+## Cross-Validation
 
 For the cross-validation, a function `cv_rf` is created to apply classification by the Random Forests algorithm, while drawing on the methods implemented in the R packages described in section 3.3: `randomForest`, `ranger`, and `cforest`. With `cv_rf`, the models' performance based on accuracy, F1 score, and F-beta score, while also recording the computational time taken to fit each model.
 
