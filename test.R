@@ -1,3 +1,4 @@
+rm(list = ls())
 # Test-script #
 
 # load the basic packages
@@ -40,7 +41,7 @@ str(pop)
 
 table(pop$y)
 
-# Sampling the data
+# Sampling the simulated data
 
 sample_data <- pop[sample(1:nrow(pop), n), ]
 
@@ -54,6 +55,41 @@ test <- sample_data[-idx, ]
 
 table(train$y)
 table(test$y)
+
+
+#### load empirical data ####
+cov <- as.data.frame(read.csv("covtype.csv", stringsAsFactors = FALSE))
+
+str(cov)
+summary(cov)
+
+# recode dependent variable (Cover_Type) as factor and assign labels
+cov$Cover_Type <- factor(cov$Cover_Type,
+                         levels = 1:7,
+                         labels = c("Spruce/Fir", "Lodgepole Pine", "Ponderosa Pine", 
+                                    "Cottonwood/Willow", "Aspen", "Douglas-fir", 
+                                    "Krummholz"))
+cov$Cover_Type <- as.factor(cov$Cover_Type)
+table(cov$Cover_Type)
+
+# check for NA's: none
+sapply(cov ,function(x)any(is.na(x)))
+
+# sampling the empirical data 
+set.seed(1234)
+
+sample_cov <- cov[sample(1:nrow(cov), n), ]
+
+table(sample_cov$Cover_Type)
+
+idx_cov <- sample(1:nrow(sample_cov), 0.8*n)
+
+train_cov <- sample_cov[idx_cov, ]
+test_cov <- sample_cov[-idx_cov, ]
+
+table(train_cov$Cover_Type)
+table(test_cov$Cover_Type)
+
 
 # ---- Cross-Validation ----
 
@@ -176,12 +212,14 @@ cv_rf <- function(train_data, test_data, y, mtry, ntree,
 # you should use at least 2 cores
 registerDoParallel(detectCores()-4)
 
-n_tree <- seq(100, 200, 100)
-mtry <- 4:5
+n_tree <- seq(300, 700, 100)
+mtry <- 2:8
 
 # grid with all the hyperparameters
 grid_hp <- expand.grid(n_tree, mtry)
 
+
+#### simulated data ####
 out_fe <- foreach(i = 1:nrow(grid_hp),
                   .multicombine = T, # combine the results efficiently
                   .combine = "list", # way of binding
@@ -266,7 +304,7 @@ for (i in 1:length(gof_data)){
          x = "Step",
          y = "Value") 
   
-  ggsave(paste0("pics/", "GoF_", gof_name[i], ".png"),
+    ggsave(paste0("pics/", "GoF_", gof_name[i], ".png"),
          gof_plot[[i]],
          device = "png")
   
@@ -275,8 +313,143 @@ for (i in 1:length(gof_data)){
 gof_plot[3]
 
 
+#### same as in test.R but for empirical data ####
+registerDoParallel(detectCores()-4)
+
+n_tree <- seq(300, 700, 100)
+mtry <- 4:5
+
+# grid with all the hyperparameters
+grid_hp <- expand.grid(n_tree, mtry)
+
+out_fe_cov <- foreach(i = 1:nrow(grid_hp),
+                      .multicombine = T, # combine the results efficiently
+                      .combine = "list", # way of binding
+                      .packages = c("randomForest", "ranger", "MLmetrics", "party")) %dopar% { 
+                        # load the packages for the function, otherwise error
+                        cv_rf(train_data = train_cov, y = test_cov$Cover_Type, test_data = test_cov[,  -55],
+                              ntree = grid_hp[i, 1], mtry = grid_hp[i, 2], 
+                              replace = NULL, formula = "Cover_Type ~ .")
+                      }
+
+registerDoParallel(1) # reset the cores
+
+out_fe_cov
 
 
+# ---- transform the data ----
+
+gof_data_cov <- list()
+
+# Accuracy
+gof_data_cov[[1]] <- lapply(out_fe_cov, function(x) x[, 1]) %>% 
+  unlist() %>% 
+  cbind() %>% 
+  data.frame(value = .,
+             Package = rep(c("RandomForest", "Ranger", "Party"), 
+                           length(out_fe_cov)),
+             Iteration = rep(1:length(out_fe_cov), each = 3))
+
+names(gof_data_cov[[1]])[1] <- "value" 
 
 
+# F1-Score
+gof_data_cov[[2]] <- lapply(out_fe_cov, function(x) x[, 2]) %>% 
+  unlist() %>% 
+  cbind() %>% 
+  data.frame(value = .,
+             Package = rep(c("RandomForest", "Ranger", "Party"), 
+                           length(out_fe_cov)),
+             Iteration = rep(1:length(out_fe_cov), each = 3))
 
+names(gof_data_cov[[2]])[1] <- "value" 
+
+
+# FBeta-Score
+gof_data_cov[[3]] <- lapply(out_fe_cov, function(x) x[, 3]) %>% 
+  unlist() %>% 
+  cbind() %>% 
+  data.frame(value = ., Package = rep(c("RandomForest", "Ranger", "Party"), 
+                                      length(out_fe_cov)),
+             Iteration = rep(1:length(out_fe_cov), each = 3))
+
+names(gof_data_cov[[3]])[1] <- "value" 
+
+# Time
+gof_data_cov[[4]] <- lapply(out_fe_cov, function(x) x[, 4]) %>% 
+  unlist() %>% 
+  cbind() %>% 
+  data.frame(value = ., Package = rep(c("RandomForest", "Ranger", "Party"), 
+                                      length(out_fe_cov)),
+             Iteration = rep(1:length(out_fe_cov), each = 3))
+
+names(gof_data_cov[[4]])[1] <- "value" 
+
+# ---- plot it ----
+
+gof_plot_cov <- list()
+
+gof_name <- c("Accuracy", "F1 Score", "F-beta Score", "Time")
+
+for (i in 1:length(gof_data_cov)){
+  
+  gof_plot_cov[[i]] <- ggplot(data = gof_data_cov[[i]],
+                              aes(x = Iteration,
+                                  y = value,
+                                  group = Package,
+                                  col = Package)) +
+    geom_point() +
+    scale_color_manual(values = c("RandomForest" = "green",
+                                  "Ranger" = "red", 
+                                  "Party" = "blue")) +
+    labs(title = gof_name[i],
+         subtitle = "Changing the parameters ntree and mtry at each step",
+         x = "Step",
+         y = "Value") 
+  
+    ggsave(paste0("pics/", "GoF_", gof_name[i], ".png"),
+         gof_plot_cov[[i]],
+         device = "png")
+  
+}
+
+gof_plot_cov[3]
+
+
+#### some descriptives ####
+
+# empirical data
+str(cov)
+summary(cov)
+
+# check dependent variable
+table(cov$Cover_Type)
+# classes are imbalanced, but reasonable number of obs. for each category
+
+# simulated data
+str(pop)
+summary(pop)
+
+# check dependent variable
+table(pop$y)
+
+
+# check distribution of dependent variables in simulated and empirical data
+par(mfrow = c(1, 2))
+
+barplot(table(sample_data$y),
+        main = "SIMULATED DATA: Distribution of y in sampled data",
+        xlab = "Baumarten",
+        ylab = "#",
+        col = "blue",
+        ylim = c(0,10000))
+
+barplot(table(sample_cov$Cover_Type),
+        main = "EMPIRICAL DATA: Distribution of Cover_Type in sampled data",
+        xlab = "Cover_Type",
+        ylab = "#",
+        col = "yellow",
+        ylim = c(0,10000))
+
+
+par(mfrow = c(1, 1))
