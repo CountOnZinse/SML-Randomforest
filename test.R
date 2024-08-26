@@ -11,7 +11,7 @@ if (!require("hardhat")) {
  
 # load the usefull packages
 pacman::p_load(tidyverse, hardhat, purrr, MLmetrics, foreach, doParallel, tibble,
-               paletteer)
+               paletteer, caret)
 
 # load the packages with randomforest
 pacman::p_load(randomForest, randomForestSRC, ranger,
@@ -56,7 +56,6 @@ test <- sample_data[-idx, ]
 table(train$y)
 table(test$y)
 
-
 #### load empirical data ####
 cov <- as.data.frame(read.csv("covtype.csv", stringsAsFactors = FALSE))
 
@@ -89,7 +88,6 @@ test_cov <- sample_cov[-idx_cov, ]
 
 table(train_cov$Cover_Type)
 table(test_cov$Cover_Type)
-
 
 # ---- Cross-Validation ----
 
@@ -317,7 +315,7 @@ gof_plot[3]
 registerDoParallel(detectCores()-4)
 
 n_tree <- seq(300, 700, 100)
-mtry <- 4:5
+mtry <- 2:8
 
 # grid with all the hyperparameters
 grid_hp <- expand.grid(n_tree, mtry)
