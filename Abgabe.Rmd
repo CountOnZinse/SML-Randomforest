@@ -59,6 +59,54 @@ The cross-validation is targeted at obtaining the optimal hyperparameter combina
 
 # Results
 
+The packages show different patterns in case of the used computational time and the measurements of Goodness of Fit (GoF).
+
+The Accuracy …
+
+The F1-Score …
+
+The F-Beta-Score …
+
+The party package provides the lowest values for all used GoF. The ranger packages provides the best fit for all GoF in the most hyperparameter combinations.
+
+The not chosen hyperparameters behind those functions could be the reason for the different behaviour in case of computational time and the GoF. There is a need for a deep dive into the functions, which can be found via CRAN for each individual package. For the function, which contains the computation itself, there is no written code in R. In case of RandomForest it is written in FORTRAN [@Breiman; Cutler (D. u.)] (programming language for formulas in engineering and scientific calculations), in case of ranger it is C++ [@Wright (2024)] and in case of party packages it is not clarified, where the actual function comes from [@Thothorn (2023)]. As a matter of fact there has to be a look at the preparation in R code. For every package there is one function behind which is checking and adjusting the hyperparameters. Afterwards this will be used as input for the function in the background, which computes the desired output.
+
+It can be seen that the default in Randomforest, ranger and party is the same for ntree (= 500) (green marks in the imagine beneath). The number of variables used for each split for the selection mtry. The difference is mtry = floor(sqrt(ncol(x))) for RandomForest, which adjusts downward and mtry = ceiling(sqrt(nvar)) for party, which adjusts upward (orange marks in the imagine beneath). This happens in the header of the function. The ranger package does not adjust this parameter in the preparation in R – so it should happen in the C++ script, but in default mode it is also the square root of ncol(x) and will be rounded down.
+
+```{r, echo=FALSE}
+knitr::include_graphics("pics/Tab1.png")
+```
+
+Another important part is the hyperparameter sampsize (RandomForest), sample.fraction (ranger) and perturb (party). This parameter adjusts the fraction or number of observations to sample or draw – for classification it is set to one.
+
+```{r, echo=FALSE}
+knitr::include_graphics('pics/Tab2.png')
+```
+
+One major argument, why the predicted results differ is described in the cforest package [@Thothorn (2023), S.6]:
+
+“Moreover, when predictors vary in their scale of measurement of number of categories, variable selection and computation of variable importance is biased in favor of variables with many potential cutpoints in randomForest, while in cforest unbiased trees and an adequate resampling scheme are used by default.”
+
+This could be the one reason. Another reason inside the ranger package seems to be the adjusted seed by seed = runif(1, 0, max), which is the seed for the used C++ function.
+
+```{r, echo=FALSE}
+knitr::include_graphics('pics/pic1.png')
+```
+
 # Conclusion
+
+From the point of view as a beginner it should be considered starting with easy packages, which provides good documentation and well explained hyperparameters. For this reason this paper recommends using either RandomForest itself. The RandomForest package is a direct product of Leo Breiman, which could be used as useful link between theory and practice.
+
+For already advanced users of the randomforest it is recommended to use ranger. Ranger provides a more detailed documentation. Therefore, there is a connection and an use case for the paper itself. Here we can also increase the performance with the number of used threads – default is the available CPUs.
+
+For a special kind of the randomforest the party package with the function cforest provides an alternative with conditional randomforests. The code for cforest inside the party packages is not well documented in comparison to the two other packages. This package seems to be in process of developing (regarding the comment above the code):
+
+```{r, echo=FALSE}
+knitr::include_graphics('pics/pic2.png')
+```
+
+As well as the ranger package it is using the cores (but with no further information inside the code).
+
+For further information and deep dive into the code of the actual computation of the random forest this should be regarded by someone with advanced programming skills.
 
 # References
