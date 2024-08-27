@@ -62,8 +62,8 @@ confusion_sim <- confusionMatrix(pred_sim, test$y)
 accuracy_sim <- confusion_sim$overall['Accuracy']
 
 # F1 and Fbeta score
-f1_sim <- F1_Score(pred_sim, test$y, positive = NULL)  # Adjust "1" according to your positive class
-fbeta_sim <- FBeta_Score(pred_sim, test$y, positive = NULL, beta = 0.5)  # F2-score with beta=2
+f1_sim <- F1_Score(pred_sim, test$y, positive = NULL)  
+fbeta_sim <- FBeta_Score(pred_sim, test$y, positive = NULL, beta = 0.5) 
 
 # Display results
 print(confusion_sim)
