@@ -47,16 +47,13 @@ For the analysis, on the one hand, empirical data is used. The data set original
 
 As the focus in this study lies on comparing different R packages, a short introduction to each of the packages is needed. Each package has its own underlying philosophy. First, the *randomForest*-package is described, followed by *ranger* and lastly, the *party*-package [@hothorn2005] is introduced. <br><br>
 
-Regarding the reasons for selecting the three different packages, ---
+The three packages are selected for different reasons. First, randomForest can be regarded as one of the standard packages implementing the random forest algorithm. @wright2017 : 1 also states that the package is "feature-rich and widely used". Therefore, randomForest was the inital choice for the analysis in this paper. Secondly, the ranger-package is able to handle a large number of features at the same time [@wright2017]. In this aspect, the ranger-package stands out among the different implementations of the random forest algorithm. In the party-package, lastly, the implementation of random forest is slightly different to the other R packages. This can be regarded as a promising aspect for which reason the package is included in the analysis.
 
-Hier einfügen: Gründe für die packages und warum wir sie ausgewählt haben
+Whilst preparing the analysis, other packages with random forest implementations were looked at but were not chosen for the final analysis.
 
--   *randomForest*-package can be regarded as one of the standard packages implementing the random forest algorithm, which is one of the reasons for using the package in this study. =\> "feature-rich and widely used" (Wright 2017)
 -   rJungle: nicht genommen, nicht mehr maintained -\> in ranger aufgegangen =\> optimitiert für high dimensional data (Wright & Ziegler, 2017)
 -   rborist: benötigt größeres Fine-Tuning von Hyperparameter/Argumente um zu ähnlich präzisen Ergebnissen/hohe Accuracy wie andere Pakete zu kommen
 -   caret: umfassendes Paket, nicht auf RF spezialisiert, bisherige Berichte über hohe runtime
--   ranger: Ranger is able to handle a larger number of features at the same time.
--   party: "The R package party (Hothorn, Hornik, and Zeileis 2006 @10.1198/106186006x133933) offers a general framework for recursive partitioning and includes an RF implementation, but it shares the weaknesses of randomForest and Willows" (Wright & Ziegler, 2017)
 
 ### randomForest
 
@@ -79,6 +76,8 @@ The R package random forest generator (known as “Ranger”) package is an impl
 ### party
 
 The documentation of the *party*-package states differences to the *randomForest*-package in the basic implementation, i.e. different base learners were used [@hothorn2005, p. 6]. Whereas the *randomForest*-package draws on Classification and Regression Trees (CART) to form a random forest, the *party*-package utilizes conditional inference trees designed to prevent overfitting and variable selection bias while combining statistical testing and the basic ideas of CART [@hothorn2006]. Also, the default of the hyperparameters are slightly different to the *randomForest*-package. For example, the default value of `mtry` equals $5$ while in *randomForest* $\sqrt p$ is specified.
+
+-   party: "The R package party (Hothorn, Hornik, and Zeileis 2006 @10.1198/106186006x133933) offers a general framework for recursive partitioning and includes an RF implementation, but it shares the weaknesses of randomForest and Willows" (Wright & Ziegler, 2017)
 
 ## Cross-validation
 
