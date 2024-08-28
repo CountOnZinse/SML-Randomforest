@@ -27,7 +27,7 @@ In this paper, random forests are used for prediction of categorial data. There 
 
 ## Classification Trees
 
-Classification trees are a type of decision tree used in supervised machine learning to classify data into distinct categories. They are powerful tools for both predictive modeling and data analysis, particularly useful when the outcome variable is categorical. The basic idea behind classification trees is to split the dataset into smaller, more homogeneous groups based on certain criteria, ultimately leading to a decision about the class to which a particular data point belongs [@https://doi.org/10.1007/978-1-0716-1418-1]. The splitting procedure in classification trees is a critical step that determines how the dataset is divided at each node. The goal of splitting is to create groups of data that are as homogeneous as possible with respect to the target variable. The process involves selecting the best feature to split on, which maximizes the distinction between the classes. For each feature, the algorithm considers all possible splits. For categorical attributes, splits are considered for every possible subset of categories and their impurity is calculated. Impurity is a measure of how mixed the classes are in the dataset. There are different methods to measure the impurity. The Gini index is most commonly used. It is defined as: *INSERT FORMULA*, where phat\_{mk} is the proportion of samples that belong to class mk in the node and K is the total number of classes. The split that results in the lowest impurity is chosen. This process is repeated recursively, splitting each subset further until a stopping criterion (e.g. maximum tree depth or a minimum number of observations per leaf) is met[@https://doi.org/10.1007/978-1-0716-1418-1, @https://doi.org/10.1201/9781315139470]. When built, a classification tree consists of different types of nodes: The tree starts with a root node that represents the entire dataset. This root node is split based on a feature that results in the most significant distinction between the classes. Nodes that result in a pure subset, where all data points belong to the same class, become terminal nodes, also known as leaves. Each leaf represents a final classification decision [@https://doi.org/10.1007/978-1-0716-1418-1, \@ <https://doi.org/10.1007/BF00116251>]. One of the main advantages of classification trees is their interpretability. The visual structure of a tree is easy to understand, making it possible to explain the decision-making process to non-technical stakeholders. Furthermore, classification trees can handle both numerical and categorical data without requiring much preprocessing, such as normalization or scaling. However, classification trees are not without drawbacks. They are prone to overfitting, especially when the tree grows too deep, capturing noise rather than the underlying pattern. Techniques like pruning, where parts of the tree are removed after the initial training, can help mitigate this problem. Additionally, classification trees may become unstable if small changes in the data lead to different splits and, consequently, different trees. To address this, ensemble methods like random forests are often employed, combining multiple trees to improve accuracy and robustness [\@ <https://doi.org/10.1007/BF00116251>, @https://doi.org/10.1007/978-1-0716-1418-1].
+Classification trees are a type of decision tree used in supervised machine learning to classify data into distinct categories. They are powerful tools for both predictive modeling and data analysis, particularly useful when the outcome variable is categorical. The basic idea behind classification trees is to split the dataset into smaller, more homogeneous groups based on certain criteria, ultimately leading to a decision about the class to which a particular data point belongs [@https://doi.org/10.1007/978-1-0716-1418-1]. The splitting procedure in classification trees is a critical step that determines how the dataset is divided at each node. The goal of splitting is to create groups of data that are as homogeneous as possible with respect to the target variable. The process involves selecting the best feature to split on, which maximizes the distinction between the classes. For each feature, the algorithm considers all possible splits. For categorical attributes, splits are considered for every possible subset of categories and their impurity is calculated. Impurity is a measure of how mixed the classes are in the dataset. There are different methods to measure the impurity. The Gini index is most commonly used. It is defined as: \[ \text{Gini}(p) = 1 - \sum_{k=1}^{K} \hat{p}_{mk}^2 \], where phat\_{mk} is the proportion of samples that belong to class mk in the node and K is the total number of classes. The split that results in the lowest impurity is chosen. This process is repeated recursively, splitting each subset further until a stopping criterion (e.g. maximum tree depth or a minimum number of observations per leaf) is met[@https://doi.org/10.1007/978-1-0716-1418-1, @https://doi.org/10.1201/9781315139470]. When built, a classification tree consists of different types of nodes: The tree starts with a root node that represents the entire dataset. This root node is split based on a feature that results in the most significant distinction between the classes. Nodes that result in a pure subset, where all data points belong to the same class, become terminal nodes, also known as leaves. Each leaf represents a final classification decision [@https://doi.org/10.1007/978-1-0716-1418-1, \@ <https://doi.org/10.1007/BF00116251>]. One of the main advantages of classification trees is their interpretability. The visual structure of a tree is easy to understand, making it possible to explain the decision-making process to non-technical stakeholders. Furthermore, classification trees can handle both numerical and categorical data without requiring much preprocessing, such as normalization or scaling. However, classification trees are not without drawbacks. They are prone to overfitting, especially when the tree grows too deep, capturing noise rather than the underlying pattern. Techniques like pruning, where parts of the tree are removed after the initial training, can help mitigate this problem. Additionally, classification trees may become unstable if small changes in the data lead to different splits and, consequently, different trees. To address this, ensemble methods like random forests are often employed, combining multiple trees to improve accuracy and robustness [\@ <https://doi.org/10.1007/BF00116251>, @https://doi.org/10.1007/978-1-0716-1418-1].
 
 ## Random Forests
 
@@ -39,9 +39,134 @@ Random forests are an ensemble learning method that can be used for classificati
 
 In line with the research question, empirical and simulated multinomial data is used while drawing on different implementations of the Random Forests algorithm to classify this data. Since the focus lies on comparing different R packages, different goodness of fit measures are considered after classification to evaluate the performance of the R packages. On the basis of the theory and the available information on the packages, it is expected that the Random Forests implementations perform similar across the different packages.
 
-## Data preparation
+## Data and data preparation
 
-For the analysis, on the one hand, empirical data is used. The data set originally stems from a project at the Colorado State University and was later donated to the UC Irvine Machine Learning Repository [@blackard]. The data set contains data on cover tree types and surrounding characteristics. In forestry, a cover tree type is determined by the most prevalent tree type in a certain forest area [@gislason2006]. Since the data set contains not only a large amount of observations but also many predictors, it is suitable for the use in the study. As the format of the data set matches the use in the study, the preparation of the data was only made on a small scale. <br><br> On the other hand, simulated data was used for which it is also aimed at arriving at a large number of observations and predictors. In the following, the simulation of the second data set is described where this study draws on the specifically for this purpose created function `gen_dataset`. To get artificial multinomial data and predictor variables, random draws from different **?probability density distributions?**, including the normal, the beta and the uniform distribution, are used. The simulated multinomial data then consists of seven different tree types, on the one hand. On the other hand, a large number of predictors is obtained. Moreover, correlations between the predictors were included in the simulation process as these are expected to be found in an empirical data set. The code generates a vector of random values between `min_cor` and `max_cor` which are both specified manually in advance. It then assigns a random index from remaining variables for each variable to create correlations. Afterwards, observations are selected based on the absolute value of the correlation. If the correlation is positive, the values of the variable are positively correlated with the chosen variable; if negative, they are negatively correlated.
+### Empirical data
+For this analysis, empirical data is utilized from a dataset that originally stemmed from a project at Colorado State University and was later donated to the UC Irvine Machine Learning Repository [@blackard]. This dataset contains information on cover tree types along with various cartographic characteristics of the surrounding area. In forestry, a cover tree type is determined by the most prevalent tree species in a specific forest area [@gislason2006].
+
+The dataset includes variables categorized as follows:
+
+- **Continuous variables**: There are 10 continuous variables capturing various physical and environmental characteristics of the forest areas, such as elevation and horizontal distance to water sources.
+- **Binary variables**: Additionally, the data contains 4 binary variables representing different wilderness areas and 40 binary variables corresponding to different soil types.
+
+In total, this amounts to 54 independent variables, with the dataset comprising 581,012 observations. The dependent variable, "cover type," describes 30 meter x 30 meter sections of forest and categorizes the forest area into 7 distinct classes based on the predominant tree species. **The distribution of these classes is presented below.** **(Include graphic here or below.)** 
+
+Given the large number of observations and predictors, this dataset is suitable for the study. Since the format of the dataset aligns with the study's requirements, only minimal data preparation was needed. The data did not contain any missing values, so preparation mainly involved recoding the dependent variable as a factor. Additionally, a subset of `n = 100,000` observations was randomly sampled from the original data, which was then divided into training and testing sets with an 80:20 split to ensure a robust evaluation of the models.
+
+### Simulated data
+In addition to empirical data, simulated data was also used to obtain a large number of observations and predictors. The following describes the simulation of the second dataset, which uses a function specifically created for this purpose, `gen_dataset`. To generate artificial multinomial data and predictor variables, random draws from different probability distributions—including normal, beta, and uniform distributions—were used.
+**(Insert gen_dataset - function)**
+```{r}
+    if(dist_disc[i] == "norm"){
+      
+      mu <- rnorm(1, 0, 2)
+      sig <- sample(seq(0.5, 10, 0.1), 1)
+      
+      x_val[, i] <- rnorm(n, mu, sig)
+      
+    }else if(dist_disc[i] == "beta"){
+      
+      alpha <- sample(seq(0.5, 5, 0.1), 1) 
+      beta <- sample(seq(0.5, 5, 0.1), 1) 
+      
+      x_val[, i] <- rbeta(n, alpha, beta)
+      
+    }else{
+      
+      min_u <- sample(seq(0, 0.5, 0.01), 1)
+      max_u <- sample(seq(0.51, 1, 0.01), 1)
+      
+      x_val[, i] <- runif(n, min_u, max_u)
+      
+    }
+    
+  }
+  
+  # generating correlations in-between the id variables
+  
+  cor_var <- sample(seq(min_cor, max_cor, 0.05), p, replace = T)
+  
+  idx_var <- vector("numeric", p)
+  
+  for(i in 2:p){
+    
+    idx_var[i] <- sample(c(1:p)[-i], 1)
+    
+  }
+  
+  for(i in 2:p){
+    
+    idx <- sample(1:n, abs(n*cor_var[i]))
+    
+    # for positive correlation
+    if(cor_var[i] > 0){
+      
+      x_val[idx, i] <- 1.351*x_val[idx, idx_var[i]]
+      
+      # for negative correlation   
+    }else{
+      
+      x_val[idx, i] <- -1.351*x_val[idx, idx_var[i]]
+      
+    }
+    
+  }
+  
+  # beta weights for the regression model
+  beta <- sample(seq(-1, 2, 0.1), p, replace = T)
+  
+  # epsilon
+  epsi <- rnorm(n)
+  
+  # calculate y
+  y <- x_val %*% as.vector(beta) + epsi
+  
+  # generating multinomial y
+  y <- ifelse(y >= min(y) & y < -5, "Tanne",
+              ifelse(y >= -5 & y < -1, "Esche",
+                     ifelse(y >= -1 & y < 5, "Rotbuche",
+                            ifelse(y >= 5 & y < 20, "Eiche", 
+                                   ifelse(y >= 20 & y < 23, "Douglasie",
+                                          ifelse(y >= 23 & y < 37, "Buche", "Kiefer"))))))
+  
+  # beta weights 
+  beta <- sample(seq(-1, 2, 0.1), p, replace = T)
+  
+  # epsilon
+  epsi <- rnorm(n)
+  
+  # calculate y
+  y_sick <- x_val %*% as.vector(beta) + epsi
+  
+  # generating binomial y
+  y_sick <- ifelse(y_sick >= min(y_sick) & y_sick < 0, "sick", "non-sick")
+  
+  out <- cbind.data.frame(as.factor(y), 
+                          as.factor(y_sick),
+                          x_val[, -1])
+  
+  # rename 
+  colnames(out) <- c("y", "y_sick", paste0("x", 2:p)) 
+  
+  out
+  
+}
+
+```
+
+
+
+The simulated data consists of a dependent multinomial variable representing seven different tree types, while a large number of predictor variables were generated using the aforementioned distributions. To mimic real-world data characteristics, correlations between the predictors were also incorporated into the simulation process, reflecting the expected correlations present in empirical data.
+
+The code generates a vector of random values between `min_cor` and `max_cor`, both specified manually in advance. For each variable, a random index is assigned from the remaining variables to create correlations. Observations are then selected based on the absolute value of the correlation. If the correlation is positive, the values of the variable are positively correlated with the chosen variable; if negative, they are negatively correlated.
+
+**(The function creates two outcome variables: a multinomial variable representing tree types and a binary variable indicating whether a tree is "sick" or "non-sick."**)
+The final dataset is generated with `p = 54` continuous predictor variables, `n = 100,000` observations, and correlations between `min_cor = -0.3` and `max_cor = 0.5`. The distribution of the multinomial dependent variable `y`, representing 7 different tree types, is shown below.
+
+**(Include graphic here or below.)**
+```{r, echo=FALSE}
+knitr::include_graphics("dependent_vars.png")
+```
 
 ## The different packages
 
