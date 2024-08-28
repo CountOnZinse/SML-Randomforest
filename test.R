@@ -211,7 +211,7 @@ cv_rf <- function(train_data, test_data, y, mtry, ntree,
 registerDoParallel(detectCores()-4)
 
 n_tree <- seq(300, 700, 100)
-mtry <- 2:8
+mtry <- 4:10
 
 # grid with all the hyperparameters
 grid_hp <- expand.grid(n_tree, mtry)
@@ -315,7 +315,7 @@ gof_plot[3]
 registerDoParallel(detectCores()-4)
 
 n_tree <- seq(300, 700, 100)
-mtry <- 2:8
+mtry <- 4:10
 
 # grid with all the hyperparameters
 grid_hp <- expand.grid(n_tree, mtry)
@@ -405,7 +405,7 @@ for (i in 1:length(gof_data_cov)){
          x = "Step",
          y = "Value") 
   
-    ggsave(paste0("pics/", "GoF_", gof_name[i], ".png"),
+    ggsave(paste0("pics/", "GoF_", gof_name_cov[i], ".png"),
          gof_plot_cov[[i]],
          device = "png")
   
@@ -433,21 +433,27 @@ table(pop$y)
 
 
 # check distribution of dependent variables in simulated and empirical data
-par(mfrow = c(1, 2))
+par(mfrow = c(1, 2)) # Set up plotting area for two plots
 
 barplot(table(sample_data$y),
-        main = "SIMULATED DATA: Distribution of y in sampled data",
-        xlab = "Baumarten",
-        ylab = "#",
+        main = "Simulated data: dependent variable",
+        xlab = "Tree types",
+        ylab = "",
         col = "blue",
-        ylim = c(0,10000))
+        ylim = c(0, 50000),
+        las = 2,              # Make x-axis labels perpendicular
+        cex.names = 0.8,      # Adjust size of x-axis labels
+        mgp = c(3, 1, 0))  
+
 
 barplot(table(sample_cov$Cover_Type),
-        main = "EMPIRICAL DATA: Distribution of Cover_Type in sampled data",
-        xlab = "Cover_Type",
-        ylab = "#",
+        main = "Empirical data: dependent variable",
+        xlab = "Cover Type",
+        ylab = "",
         col = "yellow",
-        ylim = c(0,10000))
+        ylim = c(0, 50000),
+        las = 2,
+        cex.names = 0.8,
+        mgp = c(3, 1, 0))   
 
-
-par(mfrow = c(1, 1))
+par(mfrow = c(1, 1)) # Set back plotting area
