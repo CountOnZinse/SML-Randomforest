@@ -208,7 +208,7 @@ cv_rf <- function(train_data, test_data, y, mtry, ntree,
 
 # adjust the cores here - it depends on how many cores you have 
 # you should use at least 2 cores
-registerDoParallel(detectCores()-4)
+registerDoParallel(detectCores()-2)
 
 n_tree <- seq(300, 700, 100)
 mtry <- 4:10
@@ -312,7 +312,7 @@ gof_plot[3]
 
 
 #### same as in test.R but for empirical data ####
-registerDoParallel(detectCores()-4)
+registerDoParallel(detectCores()-2)
 
 n_tree <- seq(300, 700, 100)
 mtry <- 4:10
