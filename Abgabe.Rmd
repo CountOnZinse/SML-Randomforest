@@ -29,9 +29,13 @@ Tree-based methods can be used for the prediction of categorical as well as cont
 
 Classification trees are a type of decision tree used in supervised machine learning to classify data into discrete categories. They are powerful tools for both predictive modeling and data analysis, particularly useful when the outcome variable is categorical. The basic idea behind classification trees is to split the dataset into smaller, more homogeneous and distinct groups based on certain criteria, ultimately leading to a decision about the class to which a particular data point belongs [@james2021].
 
-The splitting procedure in classification trees is a critical step that determines how the dataset is divided at each node. The goal of splitting is to create groups of data that are as homogeneous as possible with respect to the target variable. The process involves selecting the best feature to split on, which maximizes the distinction between the classes. For each feature, the algorithm considers all possible splits. For categorical attributes, splits are considered for every possible subset of categories and their impurity is calculated. Impurity is a measure of how mixed the classes are in the dataset. There are different methods to measure the impurity. The Gini index is most commonly used. It is defined as: $G = \sum^K_{k=1} \hat{p}_{mk} (1-\hat{p}_{mk})$,
+The splitting procedure in classification trees is a critical step that determines how the dataset is divided at each node. The goal of splitting is to create groups of data that are as homogeneous as possible with respect to the target variable. The process involves selecting the best feature to split on, which maximizes the distinction between the classes. For each feature, the algorithm considers all possible splits. For categorical attributes, splits are considered for every possible subset of categories and their impurity is calculated. Impurity is a measure of how mixed the classes are in the dataset. There are different methods to measure the impurity. The Gini index is most commonly used. It is defined as:
 
-where $\hat{p}_{mk}$ is the proportion of samples that belong to class mk in the node and K is the total number of classes. The split that results in the lowest impurity is chosen. This process is repeated recursively, splitting each subset further until a stopping criterion (e.g. maximum tree depth or a minimum number of observations per leaf) is met [@james2021; @breiman1984].
+$$
+G = \sum^K_{k=1} \hat{p}_{mk} (1-\hat{p}_{mk})
+$$
+
+where $\hat{p}_{mk}$ is the proportion of samples that belong to class $mk$ in the node and $K$ is the total number of classes. The split that results in the lowest impurity is chosen. This process is repeated recursively, splitting each subset further until a stopping criterion (e.g. maximum tree depth or a minimum number of observations per leaf) is met [@james2021; @breiman1984].
 
 When built, a classification tree consists of different types of nodes: The tree starts with a root node that represents the entire dataset. This root node is split based on a feature that results in the most significant distinction between the classes. Nodes that result in a pure subset, where all data points belong to the same class, become terminal nodes, also known as leaves. Each leaf represents a final classification decision [@quinlan1986; @james2021].
 
@@ -47,7 +51,7 @@ This approach mitigates some of the key weaknesses of individual decision trees,
 
 The random forest algorithm starts by creating multiple training datasets using a method called bootstrap sampling. This involves randomly sampling the original dataset with replacement, meaning that some data points may appear multiple times in a sample, while others may not appear at all. Each of these bootstrapped datasets is used to train a different decision tree in the forest.
 
-When splitting nodes in each tree, random forests add another layer of randomness by selecting a random subset of features (typically the square root of the total number of features) to consider for the split. This helps ensure that the trees are diverse, reducing the correlation between them and improving the robustness of the final model.
+When splitting nodes in each tree, random forests add another layer of randomness by selecting a random subset of features (typically the square root of the total number of features $\sqrt p$) to consider for the split. In statistical programming languages, this functionality is often determined by the hyperparameter `mtry`. This helps ensure that the trees are diverse, reducing the correlation between them and improving the robustness of the final model.
 
 Each decision tree in the forest is grown to its full depth without pruning. This allows each tree to capture detailed patterns in the data, though it may overfit on its own. However, since each tree is trained on a slightly different dataset and set of features, their errors tend to cancel each other out when combined [@james2021].
 
@@ -254,19 +258,21 @@ The type of dependent variable which is to be predicted determines whether class
 
 In comparison to other packages implementing the random forest algorithm, randomForest requires to manually specify parallelization techniques to optimize run-time and performance. This can be regarded as a disadvantage of the package.
 
---- folgendes vllt bei cross validation positionieren---
-
-In addition, various hyperparameters of the algorithm can be defined: for example, it is possible to specify how many variables are randomly selected at each split of the single trees (hyperparameter `mtry`). Moreover, mathematically interesting is the use of $\sqrt p$ as the default hyperparameter in classification.
-
 ### Ranger
 
-The R package random forest generator (known as "Ranger") package is an implementation for random forests with optimizations for high dimensional data in R [@schwarz2010]. The developers @wright2017: 2 claim to provide a package which is comparably simple to use. The package is optimized by extensive memory profiling for different types of input data. As a random forest is proceeded in R, all values of all features of mtry are splitting candidates. Since the required computational power increases exponentially with added features, this is the bottleneck for many random forest packages and the developers of the ranger package focused on this problem. The `ranger` function is used to grow a forest and makes use of two different algorithms for the splitting process. At first, the feature values are sorted and accessed by their index. In the second algorithm, the values are sorted and retrieved while splitting. Other than the package RandomForest, Ranger is license free and the software is open-source released which improves traceability of the functions for users on the one hand and accessible for implementation of new features by other developers on the other hand [@wright2017: 2f.]. It stands out, that the code for ranger is written in C++ and uses standard libraries only. C++ is described as a low-level language, which expresses in a machine-oriented design and more efficient use of memory [@haidl2017]. This makes parallel processing available and considerably accelerates the runtime. Besides from CART, survival trees are also supported by the ranger package.
+The R package random forest generator (known as "Ranger") package is an implementation for random forests with optimizations for high dimensional data in R [@schwarz2010]. The developers @wright2017: 2 claim to provide a package which is comparably simple to use.
+
+The package is optimized by extensive memory profiling for different types of input data. As a random forest is proceeded in R, all values of all features of `mtry` are splitting candidates. Since the required computational power increases exponentially with added features, this is the bottleneck for many random forest packages and the developers of the ranger package focused on this problem.
+
+The `ranger` function is used to grow a forest and makes use of two different algorithms for the splitting process. At first, the feature values are sorted and accessed by their index. In the second algorithm, the values are sorted and retrieved while splitting.
+
+Other than the package RandomForest, Ranger is license free and the software is open-source released which improves traceability of the functions for users on the one hand and accessible for implementation of new features by other developers on the other hand [@wright2017: 2f.]. It stands out, that the code for ranger is written in C++ and uses standard libraries only. C++ is described as a low-level language, which expresses in a machine-oriented design and more efficient use of memory [@haidl2017]. This makes parallel processing available and considerably accelerates the runtime. Besides from CART, survival trees are also supported by the ranger package.
 
 ### Party
 
-The documentation of the *party*-package states differences to the *randomForest*-package in the basic implementation, i.e. different base learners were used [@hothorn2005, p. 6]. Whereas the *randomForest*-package draws on Classification and Regression Trees (CART) to form a random forest, the *party*-package utilizes conditional inference trees designed to prevent overfitting and variable selection bias while combining statistical testing and the basic ideas of CART [@hothorn2006]. Also, the default of the hyperparameters are slightly different to the *randomForest*-package. For example, the default value of `mtry` equals $5$ while in *randomForest* $\sqrt p$ is specified.
+The documentation of the *party*-package states differences to the *randomForest*-package in the basic implementation, i.e. different base learners were used [@hothorn2005, p. 6]. Whereas the *randomForest*-package draws on Classification and Regression Trees (CART) to form a random forest, the *party*-package utilizes conditional inference trees in the `cforest` function designed to prevent overfitting and variable selection bias while combining statistical testing and the basic ideas of CART [@hothorn2006].
 
--   party: "The R package party (Hothorn, Hornik, and Zeileis 2006 @10.1198/106186006x133933) offers a general framework for recursive partitioning and includes an RF implementation, but it shares the weaknesses of randomForest and Willows" (Wright & Ziegler, 2017)
+In general, the party-package is designed for recursive partitioning [@wright2017]. At the same time, similar to the randomForest-package and in comparison to the ranger-package, party is not specifically optimized for high-dimensional data and requires to manually specify parallelization techniques.
 
 ## Cross-Validation
 
@@ -389,7 +395,7 @@ By using parallelization techniques, various hyperparameter combinations (`ntree
 
 The cross-validation is targeted at obtaining the optimal hyperparameter combinations as measured in different goodness-of-fit indicators for each type of data, empirical as well as simulated data,.
 
-Mathematically interesting are the different default
+Mathematically interesting are the different default settings for the hyperparameters `ntree` and `mtry`. For example, the default value of `mtry` in the party-package is `mtry = 5` while in *randomForest* `mtry = sqrt(p)` is specified.
 
 # Results
 
