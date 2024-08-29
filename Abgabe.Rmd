@@ -49,19 +49,19 @@ Random forests are an ensemble learning method that can be used for classificati
 
 In line with the research question, empirical and simulated multinomial data is used while drawing on different implementations of the Random Forests algorithm to classify this data. Since the focus lies on comparing different R packages, different goodness of fit measures are considered after classification to evaluate the performance of the R packages. On the basis of the theory and the available information on the packages, it is expected that the Random Forests implementations perform similar across the different packages.
 
-## Data and data preparation
+## Data Preparation
 
-### Empirical data
+### Empirical Data
 
 For this analysis, empirical data is utilized from a data set that originally stemmed from a project at Colorado State University and was later donated to the UC Irvine Machine Learning Repository [@blackard]. This data set contains information on cover tree types along with various cartographic characteristics of the surrounding area. In forestry, a cover tree type is determined by the most prevalent tree species in a specific forest area [@gislason2006].\
-The data set includes variables categorized as follows: \
+The data set includes variables categorized as follows:\
 **Continuous variables**: There are 10 continuous variables capturing various physical and environmental characteristics of the forest areas, such as elevation and horizontal distance to water sources.\
 **Binary variables**: Additionally, the data contains 4 binary variables representing different wilderness areas and 40 binary variables corresponding to different soil types.\
-In total, this amounts to 54 independent variables, with the data set comprising 581,012 observations. The dependent variable, "cover type," describes 30 meter x 30 meter sections of forest and categorizes the forest area into 7 distinct classes based on the predominant tree species. \
-**The distribution of these classes is presented below.** **(Include graphic here or below.)\
+In total, this amounts to 54 independent variables, with the data set comprising 581,012 observations. The dependent variable, "cover type," describes 30 meter x 30 meter sections of forest and categorizes the forest area into 7 distinct classes based on the predominant tree species.\
+**(The distribution of these classes is presented below.)** **\
 **Given the large number of observations and predictors, this data is suitable for the study. Since the format of the data set aligns with the study's requirements, only minimal data preparation was needed. The data did not contain any missing values, so preparation mainly involved recoding the dependent variable as factor. Additionally, a subset of `n = 100,000` observations was randomly sampled from the original data, which was then divided into training and testing sets with an 80:20 split to ensure a robust evaluation of the models.
 
-### Simulated data
+### Simulated Data
 
 In addition to the empirical data, simulated data has also been used in order to obtain a large number of observations and predictors. The following describes the simulation of the second data set, which uses a function specifically created for this purpose, `gen_dataset`. To generate artificial multinomial data and predictor variables, random draws from different probability distributions---including normal, beta, and uniform distributions---were used.
 
@@ -173,6 +173,38 @@ knitr::include_graphics("dependent_vars.png")
 ```
 
 ## GoF-measures
+
+To evaluate the performance of the Random Forest models, several goodness-of-fit (GoF) measures are used:
+
+### Accuracy
+
+Accuracy is one of the most straightforward evaluation metrics, representing the proportion of correctly predicted observations to the total number of observations. It is calculated as:
+
+$$
+\text{Accuracy} = \frac{\text{True Positives} + \text{True Negatives}}{\text{Total Observations}}
+$$
+
+While accuracy is useful when the classes are well-balanced, it can be misleading in cases where the classes are imbalanced, as it does not consider the types of errors made by the model [src].
+
+### F1-Score
+
+The F1-Score is a weighted average of precision and recall, providing a single metric that balances both false positives and false negatives. Precision (also known as positive predictive value) measures how many of the predicted positive instances are correct, while recall (or sensitivity) measures how many of the actual positive instances are correctly identified by the model. The F1-Score is calculated as:
+
+$$
+\text{F1-Score} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
+$$
+
+The F1-Score is particularly useful in scenarios where the distribution of classes is imbalanced, as it provides a more nuanced measure of a model's performance than accuracy [src].
+
+### F-Beta Score
+
+The F-Beta Score is a generalization of the F1-Score, allowing for a greater emphasis on either precision or recall by adjusting the value of $\beta$. When $\beta = 1$, the F-Beta Score is equivalent to the F1-Score, giving equal weight to both precision and recall. For $\beta < 1$, more weight is given to precision, while for $\beta > 1$, recall is prioritized. The formula for the F-Beta Score is:
+
+$$
+F_\beta = (1 + \beta^2) \times \frac{\text{Precision} \times \text{Recall}}{(\beta^2 \times \text{Precision}) + \text{Recall}}
+$$
+
+By adjusting $\beta$, users can fine-tune the performance measure according to their specific needs, depending on whether false positives or false negatives are more critical for the problem at hand [src].
 
 ## The Different Packages
 
