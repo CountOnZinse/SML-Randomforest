@@ -3,11 +3,11 @@ title: "Testing and Comparing Different R Packages on Random Forest Algorithm"
 author: "Riedlmeier, Moritz; Schröter, Timo; Steins, Patricia; Zinsmeister, Philipp"
 date: "August 30, 2024"
 output:
-  pdf_document: default
   html_notebook:
     toc: true
     number_sections: true
     theme: cosmo
+  pdf_document: default
 subtitle: RandomForest, Ranger and Party
 bibliography: references.bib
 link-citations: true
