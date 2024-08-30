@@ -7,6 +7,8 @@ output:
     toc: true
     number_sections: true
     theme: cosmo
+  word_document:
+    toc: true
   pdf_document: default
 subtitle: RandomForest, Ranger and Party
 bibliography: references.bib
@@ -247,7 +249,7 @@ By adjusting $\beta$, users can fine-tune the performance measure according to t
 
 ## The Different Packages
 
-As the focus in this study lies on comparing different R packages, a short introduction to each of the packages is needed. Each package has its own underlying philosophy. First, the *randomForest*-package is described, followed by *ranger* and lastly, the *party*-package [@hothorn2005] is introduced.
+As the focus in this study lies on comparing different R packages, a short introduction to each of the packages is needed. Each package has its own underlying philosophy. First, the *randomForest*-package is described, followed by *ranger* and lastly, the *party*-package [@hothorn2024] is introduced.
 
 The three packages are selected for different reasons. First, randomForest can be regarded as one of the standard packages implementing the random forest algorithm. In the literature, it is stated that the package is "feature-rich and widely used" [@wright2017, p. 1]. Therefore, randomForest was the inital choice for the analysis in this paper. Secondly, the ranger-package is able to handle a large number of features at the same time [@wright2017]. In this aspect, the ranger-package stands out among the different implementations of the random forest algorithm. In the party-package, lastly, the implementation of random forest is slightly different to the other R packages. This can be regarded as a promising aspect for which reason the package is included in the analysis.
 
@@ -257,7 +259,7 @@ Whilst preparing the analysis, other packages with random forest implementations
 
 The package *randomForest* draws on the original algorithm described in @breiman2001 and originally published in Fortran [@breiman2002]. As randomForest can be regarded as one of the standard packages implementing the random forest algorithm in the function `randomForest`, the documentation of the package is extensive and gives the user plenty of advice on how the implemented functions work or which arguments can be specified. Additionally, developers can access the open-source published code to gain an even deeper understanding of the parameters used in defining the function `randomForest`.
 
-The type of dependent variable which is to be predicted determines whether classification or regression is performed using the random forest algorithm whereas the implementation of the two prediction methods slightly differs [@randomfo2002]. This fact might be relevant for users interested in both, classification as well as regression, while there is no significance for the use in this paper.
+The type of dependent variable which is to be predicted determines whether classification or regression is performed using the random forest algorithm whereas the implementation of the two prediction methods slightly differs [@liaw2002]. This fact might be relevant for users interested in both, classification as well as regression, while there is no significance for the use in this paper.
 
 In comparison to other packages implementing the random forest algorithm, randomForest requires to manually specify parallelization techniques to optimize run-time and performance. This can be regarded as a disadvantage of the package.
 
@@ -273,7 +275,7 @@ Other than the package RandomForest, Ranger is license free and the software is 
 
 ### Party
 
-The documentation of the *party*-package states differences to the *randomForest*-package in the basic implementation, i.e. different base learners were used [@hothorn2005, p. 6]. Whereas the *randomForest*-package draws on Classification and Regression Trees (CART) to form a random forest, the *party*-package utilizes conditional inference trees in the `cforest` function designed to prevent overfitting and variable selection bias while combining statistical testing and the basic ideas of CART [@hothorn2006].
+The documentation of the *party*-package states differences to the *randomForest*-package in the basic implementation, i.e. different base learners were used [@hothorn2024, p. 6]. Whereas the *randomForest*-package draws on Classification and Regression Trees (CART) to form a random forest, the *party*-package utilizes conditional inference trees in the `cforest` function designed to prevent overfitting and variable selection bias while combining statistical testing and the basic ideas of CART [@hothorn2006].
 
 In general, the party-package is designed for recursive partitioning [@wright2017]. At the same time, similar to the randomForest-package and in comparison to the ranger-package, party is not specifically optimized for high-dimensional data and requires to manually specify parallelization techniques.
 
@@ -414,9 +416,9 @@ The R package party provides the lowest values for all used GoF. The ranger pack
 
 One of the reasons for the different behaviour with respect to computational time and the GoF could be those hyperparameters in the functions which were not tested in the analysis. For this reason, the analysis included a further investigation of how the random forest algorithm was implemented in the different packages. The source code can be accessed via CRAN for each individual package. All of the three analyzed packages refer to other programming languages for the computation of the random forest algorithm itself.
 
-In case of the randomForest package, the computation of the random forest algorithm is written in Fortran, with an R port to provide access to the implementation in R [@breiman2002]. The ranger package refers to C++ [@wright2017] while in the case of the party package, it is not clarified how the algorithm is implemented apart from the R function [@Thothorn (2023)]. For the final implementation in the R functions, each package includes helper functions checking and adjusting the hyperparameters. The manual specification via specifying the arguments of the packages' functions serves as an input for the function in the background, which computes the desired output.
+In case of the randomForest package, the computation of the random forest algorithm is written in Fortran, with an R port to provide access to the implementation in R [@breiman2002]. The ranger package refers to C++ [@wright2017] while in the case of the party package, it is not clarified how the algorithm is implemented apart from the R function [@hothorn2024; @hothorn2024a]. For the final implementation in the R functions, each package includes helper functions checking and adjusting the hyperparameters. The manual specification via specifying the arguments of the packages' functions serves as an input for the function in the background, which computes the desired output.
 
-It can be seen that the default argument in randomForest, ranger and party is the same for `ntree = 500` (green marks in the imagine beneath). Also, the number of variables used for each split for the selection `mtry` can be specified. Comparing the R packages, it can be seen that `mtry = floor(sqrt(ncol(x)))` for randomForest, which adjusts downward and `mtry = ceiling(sqrt(nvar))` for party, which adjusts upward (orange marks in the imagine beneath). The ranger package does not adjust this hyperparameter in the R source code, therefore, the expectation is an implementation in the C++ script. Nonetheless, the documentation of the ranger package states \$\\sqrt p\$ as the default argument.
+It can be seen that the default argument in randomForest, ranger and party is the same for `ntree = 500` (green marks in the imagine beneath). Also, the number of variables used for each split for the selection `mtry` can be specified. Comparing the R packages, it can be seen that `mtry = floor(sqrt(ncol(x)))` for randomForest, which adjusts downward and `mtry = ceiling(sqrt(nvar))` for party, which adjusts upward (orange marks in the imagine beneath). The ranger package does not adjust this hyperparameter in the R source code, therefore, the expectation is an implementation in the C++ script. Nonetheless, the documentation of the ranger package states $\sqrt p$ as the default argument.
 
 ```{r, echo=FALSE}
 knitr::include_graphics("pics/Tab1.png")
@@ -428,7 +430,7 @@ Another important part is the hyperparameter `sampsize` (randomForest), `sample.
 knitr::include_graphics('pics/Tab2.png')
 ```
 
-One major argument why the predicted results differ is described in the documentation of the party package [@Thothorn (2023), S.6]:
+One major argument why the predicted results differ is described in the documentation of the party package [@hothorn2024, p. 6]:
 
 "Moreover, when predictors vary in their scale of measurement of number of categories, variable selection and computation of variable importance is biased in favor of variables with many potential cutpoints in randomForest, while in cforest unbiased trees and an adequate resampling scheme are used by default."
 
@@ -444,7 +446,7 @@ As from the point of view of random forest beginners, it is reasonable to start 
 
 For users familiar with the random forest algorithm, it is recommended to use the ranger package. Ranger provides a more detailed documentation and allows for specifying more hyperparameters. As the ranger package is optimized for high-dimensional data and includes parallelization techniques, this aspect presents itself as starting points for future research. The performance could be improved by increasing the number of threads used while the default are the available CPUs.
 
-Lastly, the party package offer a special kind of the random forest algorithm as the function `cforest` provides an alternative with conditional random forests. The documentation of the package and especially for the cforest function can be improved compared to the extensive documentation of the other two packages included in the analysis of this paper. Similar to the ranger package, the party package draws on parallelization techniques without further specifying the actual implementation. This package seems to be in process of developing (see the comment above the code):
+Lastly, the party package offer a special kind of the random forest algorithm as the function `cforest` provides an alternative with conditional random forests. The documentation of the package and especially for the `cforest` function can be improved compared to the extensive documentation of the other two packages included in the analysis of this paper. Similar to the ranger package, the party package draws on parallelization techniques without further specifying the actual implementation. This package seems to be in process of developing (see the comment above the code):
 
 ```{r, echo=FALSE}
 knitr::include_graphics('pics/pic2.png')
