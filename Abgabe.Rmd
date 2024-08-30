@@ -420,9 +420,9 @@ Now it will be analysed, what the algorithm cv_rf computed as an output for each
 
 In case of the accuracy (comparing the two plots beneath), it can be seen, that the randomForest and ranger are generating higher values than the party package for both empirical and theoretical data. This can be seen especially for the empirical data, where the party package performs less efficient than randomForest and ranger. The pattern seems to be similar regarding the slope. Overall, the values for every package for the empirical data are higher than for the simulated data.
 
-![Simulated Data](pics/GoF_Accuracy.png)
+![Simulated data](pics/GoF_Accuracy.png)
 
-![Empirical Data](pics/GoF_emp_Accuracy.png)
+![Empirical data](pics/GoF_emp_Accuracy.png)
 
 For the F1-Score (comparing the two plots beneath) the same assumption yields. randomForest achieves the highest score overall compared to the other packages for the combination ntree = 550 and mtry = 7 -- this yields for the simulated data. For the empirical data ranger performs best.
 
@@ -472,7 +472,7 @@ Interestingly to note is the differing performance between varying specification
 
 ![Empirical data](pics_n10000/GoF_F-beta%20Score.png)
 
-Compare this image with the image above for the F-Beta Score for empirical data.
+Compare this image with the image above for the F-Beta Score for empirical data. For the purpose of clarification - the missing values resulting from NAs in the computation in the F-Beta score are based on small values in either Precision or Recall.
 
 # Conclusion
 
