@@ -18,6 +18,8 @@ pacman::p_load(randomForest, randomForestSRC, ranger,
                party)
 
 
+# load data from V1
+load("data/V1GoF_Workspace.RData")
 source("own_functions.R")
 
 ####################### Doing the actual work ##################################
