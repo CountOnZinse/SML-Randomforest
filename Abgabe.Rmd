@@ -209,7 +209,7 @@ The final data set is generated with `p = 54` continuous predictor variables, `n
 In the left chart of the figure below, the distribution is more balanced than for the empirical data, with four out of the seven classes making up the majority of all.
 
 ```{r, echo=FALSE}
-knitr::include_graphics("pics/dependent-vars.png")
+knitr::include_graphics("pics/dep-var.png")
 ```
 
 ## GoF-measures
