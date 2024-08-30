@@ -415,17 +415,24 @@ values than the party package for both empirical and theoretical data. This can 
 for the empirical data, where the party package performs less efficient than RandomForest and
 ranger. The pattern seems to be similar regarding the slope. Overall, the values for every package
 for the empirical data are higher than for the simulated data.
+
+hier Plot für n=20.000 für Accuracy
+
 For the F1-Score the same assumption yields. RandomForest achieves the highest score overall
 compared to the other packages for the combination ntree = 550 and mtry = 7 – this yields for the
 simulated data. For the empirical data ranger performs best.
+
+hier plot für f1 score n=20.000, ist im Ordner pics
+
 The F-Beta-Score shows the same behaviour for the several packages. Party achieves the highest
 score overall compared to the other packages for the combination ntree = 550 and mtry = 6 – this
 yields for the simulated data. For the empirical data ranger performs best.
+
+hiet plot für fbeta score aus ordner pics
+
 Regarding the time for the simulated data party is less time consuming than the other ones.
 ranger is most time consuming, with a break at the end, where ranger performs best. For the
 empirical data party is less time consuming, where as RandomForest is most time consuming.
-
-The packages show different patterns in case of the used computational time and the measurements of Goodness of Fit (GoF).
 
 One of the reasons for the different behaviour with respect to computational time and the GoF could be those hyperparameters in the functions which were not tested in the analysis. For this reason, the analysis included a further investigation of how the random forest algorithm was implemented in the different packages. The source code can be accessed via CRAN for each individual package. All of the three analyzed packages refer to other programming languages for the computation of the random forest algorithm itself.
 
