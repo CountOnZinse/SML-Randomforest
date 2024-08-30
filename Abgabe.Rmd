@@ -3,13 +3,16 @@ title: "Testing and Comparing Different R Packages on Random Forest Algorithm"
 author: "Riedlmeier, Moritz; Schröter, Timo; Steins, Patricia; Zinsmeister, Philipp"
 date: "August 30, 2024"
 output:
+  html_document:
+    toc: true
+    df_print: paged
+  word_document:
+    toc: true
+  pdf_document: default
   html_notebook:
     toc: true
     number_sections: true
     theme: cosmo
-  word_document:
-    toc: true
-  pdf_document: default
 subtitle: RandomForest, Ranger and Party
 bibliography: references.bib
 link-citations: true
@@ -291,7 +294,7 @@ In general, the *party*-package is designed for recursive partitioning [@wright2
 
 ## Cross-Validation
 
-For the cross-validation, a function `cv_rf` is created to apply classification by the random forests algorithm, while drawing on the functions implemented in the three selected R packages: `randomForest`, `ranger`, and `cforest`. With `cv_rf`, the models' performance based on Accuracy, F1 score, and F-\$\\beta\$ score is estimated, while also recording the computational time taken to fit each model.
+For the cross-validation, a function `cv_rf` is created to apply classification by the random forests algorithm, while drawing on the functions implemented in the three selected R packages: `randomForest`, `ranger`, and `cforest`. With `cv_rf`, the models' performance based on Accuracy, F1 score, and F-$\beta$ score is estimated, while also recording the computational time taken to fit each model.
 
 ``` r
 cv_rf <- function(train_data, test_data, y, mtry, ntree,
