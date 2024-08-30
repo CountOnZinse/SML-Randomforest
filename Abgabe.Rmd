@@ -73,13 +73,11 @@ In line with the research question, empirical and simulated multinomial data is 
 
 For this analysis, empirical data is utilized from a data set that originally stemmed from a project at Colorado State University and was later donated to the UC Irvine Machine Learning Repository [@blackard]. This data set contains information on cover tree types along with various cartographic characteristics of the surrounding area. In forestry, a cover tree type is determined by the most prevalent tree species in a specific forest area [@gislason2006]. In this data set, the variable `cover_type` indicates which of seven distinct tree species is the predominant and will be used as the dependent variable in the analysis.
 
-**(The distribution of these classes is presented below.)**
-
-As is visible in the figure ... INTERPRETATION HIER
+As is visible in the figure at the end of the chapter, in the right chart, the dependent variable of the empirical data shows that the classes are highly imbalanced. As two of the seven classes make up the majority of all. This reflects the natural prevalence of certain tree types in the studied area.
 
 With respect to the independent variable, the data set includes continuous as well as binary variables. There are 10 continuous variables capturing various physical and environmental characteristics of the forest areas, such as elevation and horizontal distance to water sources. Additionally, the data contains 44 binary variables representing different wilderness areas and different soil types. In total, this amounts to `p = 54` predictors, with the data set comprising `n = 581,012`.
 
-Given the large number of observations and predictors, this data is suitable for the study. Since the format of the data set aligns with the study's requirements, only minimal data preparation was needed. The data did not contain any missing values, therefore preparation mainly involved specifying the dependent variable as a factor variable. Additionally, a subset of `n = 100,000` observations was randomly sampled from the original data, which was then divided into training and testing sets with an "80:20" split to ensure a robust evaluation of the models.
+Given the large number of observations and predictors, this data is suitable for the study. Since the format of the data set aligns with the study's requirements, only minimal data preparation was needed. The data did not contain any missing values, therefore preparation mainly involved specifying the dependent variable as a factor variable. Additionally, a subset of `n = 50,000` observations was randomly sampled from the original data, which was then divided into training and testing sets with an "80:20" split to ensure a robust evaluation of the models.
 
 ### Simulated Data
 
@@ -207,7 +205,8 @@ The simulated data consists of a dependent multinomial variable representing sev
 
 The function `gen_dataset` generates a vector of random values between `min_cor` and `max_cor`, both arguments specified manually in advance. For each variable, a random index is assigned from the remaining variables to create correlations. Observations are then selected based on the absolute value of the correlation. If the correlation is positive, the values of the variable are positively correlated with the chosen variable; if negative, they are negatively correlated.
 
-The final data set is generated with `p = 54` continuous predictor variables, `n = 100,000` observations, and correlations between `min_cor = -0.3` and `max_cor = 0.5`. While the function creates two outcome variables, the multinomial variable representing cover tree types and a binary variable indicating tree health, only the multinomial variable will be used for classification, as computational limits in this analysis only allow classifying a single variable. The distribution of the multinomial dependent variable `y` is shown below.
+The final data set is generated with `p = 54` continuous predictor variables, `n = 50,000` observations, and correlations between `min_cor = -0.3` and `max_cor = 0.5`. While the function creates two outcome variables, the multinomial variable representing cover tree types and a binary variable indicating tree health, only the multinomial variable will be used for classification, as computational limits in this analysis only allow classifying a single variable. The distribution of the multinomial dependent variable `y` is shown below.\
+In the left chart of the figure below, the distribution is more balanced than for the empirical data, with four out of the seven classes making up the majority of all.
 
 ```{r, echo=FALSE}
 knitr::include_graphics("pics/dependent-vars.png")
@@ -231,7 +230,17 @@ While accuracy is useful when the classes are well-balanced, it can be misleadin
 
 The F1-Score is particularly useful in scenarios where the distribution of classes is imbalanced, as it provides a more nuanced measure of a model's performance than accuracy [@forman2003, p. 9].
 
-The F1-Score is a weighted average of precision and recall, providing a single metric that balances both false positives and false negatives. Precision (also known as positive predictive value) measures how many of the predicted positive instances are correct, while recall (or sensitivity) measures how many of the actual positive instances are correctly identified by the model. The F1-Score is calculated as:
+The F1-Score is a weighted average of precision and recall, providing a single metric that balances both false positives and false negatives. Precision (also known as positive predictive value) and recall (or sensitivity) are calculated as:
+
+$$
+\text{Precision} = \frac{\text{True Positives}}{\text{True Positives} + \text{False Positives}}
+$$
+
+$$
+\text{Recall} = \frac{\text{True Positives}}{\text{True Positives} + \text{False Negatives}}
+$$
+
+The F1-Score is then calculated as:
 
 $$
 \text{F1-Score} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
@@ -404,35 +413,36 @@ Mathematically interesting are the different default settings for the hyperparam
 
 # Results
 
-Now it will be analysed, what the algorithm cv_rf computed as an output for each of the three
-packages. At first sight packages show different patterns in case of the used computational time
-and the measurements of Goodness of Fit (GoF). The Pattern of the packages look similar. Each
-step stands for a different hyperparameter combination (1 – (ntree = 450, mtry = 3), 2 - (ntree =
-450, mtry = 4), 3 – (ntree = 450, mtry = 5), 4 – (ntree = 450, mtry = 6), 5 – (ntree = 450, mtry = 7) and
-so on).
-In case of the accuracy, it can be seen, that the RandomForest and ranger are generating higher
-values than the party package for both empirical and theoretical data. This can be seen especially
-for the empirical data, where the party package performs less efficient than RandomForest and
-ranger. The pattern seems to be similar regarding the slope. Overall, the values for every package
-for the empirical data are higher than for the simulated data.
+**(PARAMETER GENUTZT):\
+n=50.000** ;n_tree seq(450,550,50), mtry 6:9
 
-hier Plot für n=20.000 für Accuracy
+Now it will be analysed, what the algorithm cv_rf computed as an output for each of the three packages. At first sight packages show different patterns in case of the used computational time and the measurements of Goodness of Fit (GoF). The Pattern of the packages look similar. Each step stands for a different hyperparameter combination (1 -- (ntree = 450, mtry = 3), 2 - (ntree = 450, mtry = 4), 3 -- (ntree = 450, mtry = 5), 4 -- (ntree = 450, mtry = 6), 5 -- (ntree = 450, mtry = 7) and so on). In case of the accuracy, it can be seen, that the RandomForest and ranger are generating higher values than the party package for both empirical and theoretical data. This can be seen especially for the empirical data, where the party package performs less efficient than RandomForest and ranger. The pattern seems to be similar regarding the slope. Overall, the values for every package for the empirical data are higher than for the simulated data.
 
-For the F1-Score the same assumption yields. RandomForest achieves the highest score overall
-compared to the other packages for the combination ntree = 550 and mtry = 7 – this yields for the
-simulated data. For the empirical data ranger performs best.
+```{r, echo=FALSE}
+knitr::include_graphics("pics/V1GoF_Accuracy.png")
 
-hier plot für f1 score n=20.000, ist im Ordner pics
+knitr::include_graphics("pics/V1empGoF_Accuracy.png")
 
-The F-Beta-Score shows the same behaviour for the several packages. Party achieves the highest
-score overall compared to the other packages for the combination ntree = 550 and mtry = 6 – this
-yields for the simulated data. For the empirical data ranger performs best.
+For the F1-Score the same assumption yields. RandomForest achieves the highest score overall compared to the other packages for the combination ntree = 550 and mtry = 7 -- this yields for the simulated data. For the empirical data ranger performs best.
 
-hiet plot für fbeta score aus ordner pics
+knitr::include_graphics("pics/V1GoF_F1 Score.png")
+```
 
-Regarding the time for the simulated data party is less time consuming than the other ones.
-ranger is most time consuming, with a break at the end, where ranger performs best. For the
-empirical data party is less time consuming, where as RandomForest is most time consuming.
+```{r, echo=FALSE}
+knitr::include_graphics("pics/V1empGoF_F1 Score.png")
+```
+
+The F-Beta-Score shows the same behaviour for the several packages. Party achieves the highest score overall compared to the other packages for the combination ntree = 550 and mtry = 6 -- this yields for the simulated data. For the empirical data ranger performs best.
+
+```{r, echo=FALSE}
+knitr::include_graphics("pics/V1GoF_F-beta Score.png")
+```
+
+```{r, echo=FALSE}
+knitr::include_graphics("pics/V1empGoF_F-beta Score.png")
+```
+
+Regarding the time for the simulated data party is less time consuming than the other ones. ranger is most time consuming, with a break at the end, where ranger performs best. For the empirical data party is less time consuming, where as RandomForest is most time consuming.
 
 One of the reasons for the different behaviour with respect to computational time and the GoF could be those hyperparameters in the functions which were not tested in the analysis. For this reason, the analysis included a further investigation of how the random forest algorithm was implemented in the different packages. The source code can be accessed via CRAN for each individual package. All of the three analyzed packages refer to other programming languages for the computation of the random forest algorithm itself.
 
@@ -460,8 +470,7 @@ This could be another reason for the findings of the analysis in this paper whil
 knitr::include_graphics('pics/pic1.png')
 ```
 
-Interestingly to note is the differing performance between varying specifications of n = 20,000 and n = 10,000. 
-hier plots einfügen aus dem ordner picsn10000
+Interestingly to note is the differing performance between varying specifications of n = 20,000 and n = 10,000. hier plots einfügen aus dem ordner picsn10000
 
 # Conclusion
 
