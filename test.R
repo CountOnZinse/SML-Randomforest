@@ -1,5 +1,7 @@
 rm(list = ls())
 # Test-script #
+# load data from V1
+load("data/V1GoF_Workspace.RData")
 
 # load the basic packages
 if (!require("pacman")) {
@@ -18,8 +20,6 @@ pacman::p_load(randomForest, randomForestSRC, ranger,
                party)
 
 
-# load data from V1
-load("data/V1GoF_Workspace.RData")
 source("own_functions.R")
 
 ####################### Doing the actual work ##################################
@@ -29,7 +29,7 @@ source("own_functions.R")
 
 set.seed(1234)
 
-n <- 100000
+n <- 50000
 
 # create dataset
 
@@ -212,8 +212,8 @@ cv_rf <- function(train_data, test_data, y, mtry, ntree,
 # you should use at least 2 cores
 registerDoParallel(detectCores()-2)
 
-n_tree <- seq(300, 700, 100)
-mtry <- 4:10
+n_tree <- seq(450, 550, 50)
+mtry <- 6:9
 
 # grid with all the hyperparameters
 grid_hp <- expand.grid(n_tree, mtry)
@@ -316,8 +316,8 @@ gof_plot[3]
 #### same as in test.R but for empirical data ####
 registerDoParallel(detectCores()-2)
 
-n_tree <- seq(300, 700, 100)
-mtry <- 4:10
+n_tree <- seq(450, 550, 50)
+mtry <- 6:9
 
 # grid with all the hyperparameters
 grid_hp <- expand.grid(n_tree, mtry)
@@ -389,7 +389,7 @@ names(gof_data_cov[[4]])[1] <- "value"
 
 gof_plot_cov <- list()
 
-gof_name <- c("Accuracy", "F1 Score", "F-beta Score", "Time")
+gof_name_cov <- c("Accuracy", "F1 Score", "F-beta Score", "Time")
 
 for (i in 1:length(gof_data_cov)){
   
