@@ -77,7 +77,7 @@ As is visible in the figure at the end of the chapter, in the right chart, the d
 
 With respect to the independent variable, the data set includes continuous as well as binary variables. There are 10 continuous variables capturing various physical and environmental characteristics of the forest areas, such as elevation and horizontal distance to water sources. Additionally, the data contains 44 binary variables representing different wilderness areas and different soil types. In total, this amounts to `p = 54` predictors, with the data set comprising `n = 581,012`.
 
-Given the large number of observations and predictors, this data is suitable for the study. Since the format of the data set aligns with the study's requirements, only minimal data preparation was needed. The data did not contain any missing values, therefore preparation mainly involved specifying the dependent variable as a factor variable. Additionally, a subset of `n = 50,000` observations was randomly sampled from the original data, which was then divided into training and testing sets with an "80:20" split to ensure a robust evaluation of the models.
+Given the large number of observations and predictors, this data is suitable for the study. Since the format of the data set aligns with the study's requirements, only minimal data preparation was needed. The data did not contain any missing values, therefore preparation mainly involved specifying the dependent variable as a factor variable. Additionally, a subset of `n = 20,000` observations was randomly sampled from the original data, which was then divided into training and testing sets with an "80:20" split to ensure a robust evaluation of the models.
 
 ### Simulated Data
 
@@ -205,7 +205,7 @@ The simulated data consists of a dependent multinomial variable representing sev
 
 The function `gen_dataset` generates a vector of random values between `min_cor` and `max_cor`, both arguments specified manually in advance. For each variable, a random index is assigned from the remaining variables to create correlations. Observations are then selected based on the absolute value of the correlation. If the correlation is positive, the values of the variable are positively correlated with the chosen variable; if negative, they are negatively correlated.
 
-The final data set is generated with `p = 54` continuous predictor variables, `n = 50,000` observations, and correlations between `min_cor = -0.3` and `max_cor = 0.5`. While the function creates two outcome variables, the multinomial variable representing cover tree types and a binary variable indicating tree health, only the multinomial variable will be used for classification, as computational limits in this analysis only allow classifying a single variable. The distribution of the multinomial dependent variable `y` is shown below.\
+The final data set is generated with `p = 36`continuous predictor variables, `n = 20,000` observations, and correlations between `min_cor = -0.3` and `max_cor = 0.5`. While the function creates two outcome variables, the multinomial variable representing cover tree types and a binary variable indicating tree health, only the multinomial variable will be used for classification, as computational limits in this analysis only allow classifying a single variable. The distribution of the multinomial dependent variable `y` is shown below.\
 In the left chart of the figure below, the distribution is more balanced than for the empirical data, with four out of the seven classes making up the majority of all.
 
 ```{r, echo=FALSE}
@@ -280,7 +280,7 @@ The package is optimized by extensive memory profiling for different types of in
 
 The `ranger` function is used to grow a forest and makes use of two different algorithms for the splitting process. At first, the feature values are sorted and accessed by their index. In the second algorithm, the values are sorted and retrieved while splitting.
 
-Other than the package RandomForest, Ranger is license free and the software is open-source released which improves traceability of the functions for users on the one hand and accessible for implementation of new features by other developers on the other hand [@wright2017, pp. 2.]. It stands out, that the code for ranger is written in C++ and uses standard libraries only. C++ is described as a low-level language, which expresses in a machine-oriented design and more efficient use of memory [@haidl2017]. This makes parallel processing available and considerably accelerates the runtime. Besides from CART, survival trees are also supported by the ranger package.
+Other than the package randomForest, Ranger is license free and the software is open-source released which improves traceability of the functions for users on the one hand and accessible for implementation of new features by other developers on the other hand [@wright2017, pp. 2.]. It stands out, that the code for ranger is written in C++ and uses standard libraries only. C++ is described as a low-level language, which expresses in a machine-oriented design and more efficient use of memory [@haidl2017]. This makes parallel processing available and considerably accelerates the runtime. Besides from CART, survival trees are also supported by the ranger package.
 
 ### Party
 
@@ -414,35 +414,33 @@ Mathematically interesting are the different default settings for the hyperparam
 # Results
 
 **(PARAMETER GENUTZT):\
-n=50.000** ;n_tree seq(450,550,50), mtry 6:9
+n=20.000** ;n_tree seq(450,550,50), mtry 3:7
 
-Now it will be analysed, what the algorithm cv_rf computed as an output for each of the three packages. At first sight packages show different patterns in case of the used computational time and the measurements of Goodness of Fit (GoF). The Pattern of the packages look similar. Each step stands for a different hyperparameter combination (1 -- (ntree = 450, mtry = 3), 2 - (ntree = 450, mtry = 4), 3 -- (ntree = 450, mtry = 5), 4 -- (ntree = 450, mtry = 6), 5 -- (ntree = 450, mtry = 7) and so on). In case of the accuracy, it can be seen, that the RandomForest and ranger are generating higher values than the party package for both empirical and theoretical data. This can be seen especially for the empirical data, where the party package performs less efficient than RandomForest and ranger. The pattern seems to be similar regarding the slope. Overall, the values for every package for the empirical data are higher than for the simulated data.
+Now it will be analysed, what the algorithm cv_rf computed as an output for each of the three packages. At first sight packages show different patterns in case of the used computational time and the measurements of Goodness of Fit (GoF). The Pattern of the packages look similar. Each step stands for a different hyperparameter combination (1 - (ntree = 450, mtry = 3), 2 - (ntree = 450, mtry = 4), 3 - (ntree = 450, mtry = 5), 4 - (ntree = 450, mtry = 6), 5 - (ntree = 450, mtry = 7) and so on).
 
-```{r, echo=FALSE}
-knitr::include_graphics("pics/V1GoF_Accuracy.png")
+In case of the accuracy (comparing the two plots beneath), it can be seen, that the randomForest and ranger are generating higher values than the party package for both empirical and theoretical data. This can be seen especially for the empirical data, where the party package performs less efficient than randomForest and ranger. The pattern seems to be similar regarding the slope. Overall, the values for every package for the empirical data are higher than for the simulated data.
 
-knitr::include_graphics("pics/V1empGoF_Accuracy.png")
+![Simulated Data](pics/GoF_Accuracy.png)
 
-For the F1-Score the same assumption yields. RandomForest achieves the highest score overall compared to the other packages for the combination ntree = 550 and mtry = 7 -- this yields for the simulated data. For the empirical data ranger performs best.
+![Empirical Data](pics/GoF_emp_Accuracy.png)
 
-knitr::include_graphics("pics/V1GoF_F1 Score.png")
-```
+For the F1-Score (comparing the two plots beneath) the same assumption yields. randomForest achieves the highest score overall compared to the other packages for the combination ntree = 550 and mtry = 7 -- this yields for the simulated data. For the empirical data ranger performs best.
 
-```{r, echo=FALSE}
-knitr::include_graphics("pics/V1empGoF_F1 Score.png")
-```
+![Simulated data](pics/GoF_F1%20Score.png)
 
-The F-Beta-Score shows the same behaviour for the several packages. Party achieves the highest score overall compared to the other packages for the combination ntree = 550 and mtry = 6 -- this yields for the simulated data. For the empirical data ranger performs best.
+![Empirical data](pics/GoF_emp_F1%20Score.png)
 
-```{r, echo=FALSE}
-knitr::include_graphics("pics/V1GoF_F-beta Score.png")
-```
+The F-Beta-Score (comparing the two plots beneath) shows the same behaviour for the several packages. Party achieves the highest score overall compared to the other packages for the combination ntree = 550 and mtry = 6 -- this yields for the simulated data. For the empirical data ranger performs best. This could be a hint, that those packages perform better in case of precision.
 
-```{r, echo=FALSE}
-knitr::include_graphics("pics/V1empGoF_F-beta Score.png")
-```
+![Simulated data](pics/GoF_F-beta%20Score.png)
 
-Regarding the time for the simulated data party is less time consuming than the other ones. ranger is most time consuming, with a break at the end, where ranger performs best. For the empirical data party is less time consuming, where as RandomForest is most time consuming.
+![Empirical data](pics/GoF_emp_F-beta%20Score.png)
+
+Regarding the time (comparing the two plots beneath) for the simulated data party is less time consuming than the other ones. ranger is most time consuming, with a break at the end, where ranger performs best. For the empirical data party is less time consuming, where as randomForest is most time consuming.
+
+![Simulated data](pics/GoF_Time.png)
+
+![Empirical data](pics/GoF_emp_Time.png)
 
 One of the reasons for the different behaviour with respect to computational time and the GoF could be those hyperparameters in the functions which were not tested in the analysis. For this reason, the analysis included a further investigation of how the random forest algorithm was implemented in the different packages. The source code can be accessed via CRAN for each individual package. All of the three analyzed packages refer to other programming languages for the computation of the random forest algorithm itself.
 
@@ -470,15 +468,19 @@ This could be another reason for the findings of the analysis in this paper whil
 knitr::include_graphics('pics/pic1.png')
 ```
 
-Interestingly to note is the differing performance between varying specifications of n = 20,000 and n = 10,000. hier plots einfügen aus dem ordner picsn10000
+Interestingly to note is the differing performance between varying specifications of n = 20,000 and n = 10,000. This yields especially for the simulated data.
+
+![Empirical data](pics_n10000/GoF_F-beta%20Score.png)
+
+Compare this image with the image above for the F-Beta Score for empirical data.
 
 # Conclusion
 
-As from the point of view of random forest beginners, it is reasonable to start with basic packages which provide good documentation and well explained hyperparameters. For this reason, this paper recommends using the R package randomForest itself. The randomForest package is a direct product of Leo Breiman, which could be used as useful link between theory and practice.
+From the point of view of random forest beginners, it is reasonable to start with basic packages which provide good documentation and well explained hyperparameters. For this reason, this paper recommends using the R package randomForest itself. The randomForest package is a direct product of Leo Breiman, which could be used as useful link between theory and practice.
 
 For users familiar with the random forest algorithm, it is recommended to use the ranger package. Ranger provides a more detailed documentation and allows for specifying more hyperparameters. As the ranger package is optimized for high-dimensional data and includes parallelization techniques, this aspect presents itself as starting points for future research. The performance could be improved by increasing the number of threads used while the default are the available CPUs.
 
-Lastly, the party package offer a special kind of the random forest algorithm as the function `cforest` provides an alternative with conditional random forests. The documentation of the package and especially for the `cforest` function can be improved compared to the extensive documentation of the other two packages included in the analysis of this paper. Similar to the ranger package, the party package draws on parallelization techniques without further specifying the actual implementation. This package seems to be in process of developing (see the comment above the code):
+Lastly, the party package offer a special kind of the random forest algorithm as the function `cforest` provides an alternative with conditional random forests. The documentation of the package and especially for the `cforest` function can be improved compared to the extensive documentation of the other two packages included in the analysis of this paper. Similar to the ranger package, the party package draws on parallelization techniques without further specifying the actual implementation. This package seems to be in process of developing (see the comment above the code in the following image):
 
 ```{r, echo=FALSE}
 knitr::include_graphics('pics/pic2.png')
@@ -486,6 +488,8 @@ knitr::include_graphics('pics/pic2.png')
 
 The party package can be seen as package example of a random forest implementation build from scratch. For users interested in building own functions or own implementations for the random forest algorithm, the party package could be a potential candidate.
 
-For further information and deep dive into the code of the actual computation of the random forest this should be regarded by someone with advanced programming skills.
+For further information and deep dive into the code of the actual computation of the random forest this should be regarded by someone with advanced programming skills. It would be worth a deep dive into the code programmed in C++ and Fortran to get an understanding of the actual computations.
+
+There cloud be also an interesting opportunity to study the behaviours of the packages regarding the samplesize n=10000. Here this paper discovered in the preparation of the actual output, that the party package could perform less efficient in sense of the used GoF – this can be in regard to the F1- and the F-beta score. Here seems to be potential in regarding the comparison of the performence and the samplesize of a dataset - which packages is more efficient?
 
 # References
