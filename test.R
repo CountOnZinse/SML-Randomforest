@@ -1,5 +1,6 @@
 # Test-script #
-
+load("data/V1GoF_Workspace.RData")
+load("data/V1GoFEMP.RData")
 # load the basic packages
 if (!require("pacman")) {
   install.packages("pacman")
@@ -275,7 +276,29 @@ for (i in 1:length(gof_data)){
 gof_plot[3]
 
 
+# check distribution of dependent variables in simulated and empirical data
+par(mfrow = c(1, 2)) # Set up plotting area for two plots
 
+barplot(table(sample_data$y),
+        main = "Simulated data: dependent variable",
+        ylab = "",
+        col = "blue",
+        ylim = c(0, 30000),
+        las = 2,              # Make x-axis labels perpendicular
+        cex.names = 0.8,      # Adjust size of x-axis labels
+        mgp = c(3, 1, 0))  
+
+
+barplot(table(sample_cov$Cover_Type),
+        main = "Empirical data: dependent variable",
+        ylab = "",
+        col = "yellow",
+        ylim = c(0, 30000),
+        las = 2,
+        cex.names = 0.8,
+        mgp = c(3, 1, 0))   
+
+par(mfrow = c(1, 1)) # Set back plotting area
 
 
 
