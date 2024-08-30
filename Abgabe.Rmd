@@ -19,7 +19,7 @@ link-citations: true
 
 Data scientists, analysts as well as statisticians often face data sets with a large number of variables and observations. This requires not only increasing computational power, but also more efficient methods to handle high-dimensional data and make more accurate variable selection processes to improve predictions. For this purpose, different machine learning methods like decision trees or random forests have been developed. These were first introduced by @breiman1984. They also invented the term classification and regression trees (CART). Nowadays, trees and forests are commonly used procedures to build models for predictions of a variable of interest based on several input variables. They are implemented in statistical software like the R programming language with different packages.
 
-In this paper, three different packages for R that offer solutions for random forests are analyzed. For this purpose, first the two most popular packages called "randomForest" and "Ranger" were chosen. "Party" was added to the repertoire which includes different functions for recursive partitioning. The afore-mentioned packages are benchmarked in terms of their computational performance and their prediction quality by applying the functions on simulated and empirical categorical data. While the performance is measured in terms of run-time, the prediction quality is compared with the accuracy, the F1- and F-$\beta$ Score. More details about these terms can be found in the following chapters. The motivation of this paper is to provide an empirically founded recommendation of R packages to potential users for different use-cases.
+In this paper, three different packages for R that offer solutions for random forests are analyzed. For this purpose, first the two most popular packages called "*randomForest*" and "*Ranger*" were chosen. "*Party*" was added to the repertoire which includes different functions for recursive partitioning. The afore-mentioned packages are benchmarked in terms of their computational performance and their prediction quality by applying the functions on simulated and empirical categorical data. While the performance is measured in terms of computational time needed, the prediction quality is compared with the accuracy, the F1- and F-$\beta$ Score which will be discussed. The motivation of this paper is to provide an empirically founded recommendation of R packages to potential users for different use-cases.
 
 The paper is structured in the following way: At first, the intuition of tree-structured models and how these are grown is described. After providing comprehension for CART, the theory behind random forests will be covered. In the chapter about data and method of this paper, the structure of the study will be introduced. This is followed by providing background information on the selected R packages and reasons for pre-selecting the afore-mentioned R packages. Finally, the results will be summarized and concluded with recommendations for different use-cases of random forests.
 
@@ -41,7 +41,7 @@ where $\hat{p}_{mk}$ is the proportion of samples that belong to class $mk$ in t
 
 When built, a classification tree consists of different types of nodes: The tree starts with a root node that represents the entire dataset. This root node is split based on a feature that results in the most significant distinction between the classes. Nodes that result in a pure subset, where all data points belong to the same class, become terminal nodes, also known as leaves. Each leaf represents a final classification decision [@quinlan1986; @james2021].
 
-One of the main advantages of classification trees is their interpretability. The visual structure of a tree is easy to understand, making it possible to explain the decision-making process to non-technical stakeholders. Furthermore, classification trees can handle both numerical and categorical data without requiring much preprocessing, such as normalization or scaling. However, classification trees are not without drawbacks. They are prone to overfitting, especially when the tree grows too deep, capturing noise rather than the underlying pattern. Techniques like pruning, where parts of the tree are removed after the initial training, can help mitigate this problem. Pruning in classification trees is a crucial step to balance the complexity of the model with its ability to generalize well to new data, making the model more robust and interpretable.
+One of the main advantages of classification trees is their interpretability. The visual structure of a tree is easy to understand, making it possible to explain the decision-making process to non-technical stakeholders. Furthermore, classification trees can handle both numerical and categorical data without requiring much pre-processing, such as normalization or scaling. However, classification trees are not without drawbacks. They are prone to overfitting, especially when the tree grows too deep, capturing noise rather than the underlying pattern. Techniques like pruning, where parts of the tree are removed after the initial training, can help mitigate this problem. Pruning in classification trees is a crucial step to balance the complexity of the model with its ability to generalize well to new data, making the model more robust and interpretable.
 
 Additionally, classification trees may become unstable if small changes in the data lead to different splits and, consequently, different trees. To address this, ensemble methods like random forests are often employed, combining multiple trees to improve accuracy and robustness [@quinlan1986; @james2021].
 
@@ -65,7 +65,7 @@ Random forests have a couple of disadvantages though. First, training a large nu
 
 ## Organisation of the Study
 
-In line with the research question, empirical and simulated multinomial data is used while drawing on different implementations of the Random Forests algorithm to classify this data. Since the focus lies on comparing different R packages, different goodness of fit measures are considered after classification to evaluate the performance of the R packages. On the basis of the theory and the available information on the packages, it is expected that the Random Forests implementations perform similar across the different packages.
+In line with the research question, empirical and simulated multinomial data is used while drawing on different implementations of the random forests algorithm to classify this data. Since the focus lies on comparing different R packages, different goodness of fit measures are considered after classification to evaluate the performance of the R packages. On the basis of the theory and the available information on the packages, it is expected that the random forests implementations perform similar across the different packages.
 
 ## Data Preparation
 
@@ -205,8 +205,9 @@ The simulated data consists of a dependent multinomial variable representing sev
 
 The function `gen_dataset` generates a vector of random values between `min_cor` and `max_cor`, both arguments specified manually in advance. For each variable, a random index is assigned from the remaining variables to create correlations. Observations are then selected based on the absolute value of the correlation. If the correlation is positive, the values of the variable are positively correlated with the chosen variable; if negative, they are negatively correlated.
 
-The final data set is generated with `p = 36`continuous predictor variables, `n = 20,000` observations, and correlations between `min_cor = -0.3` and `max_cor = 0.5`. While the function creates two outcome variables, the multinomial variable representing cover tree types and a binary variable indicating tree health, only the multinomial variable will be used for classification, as computational limits in this analysis only allow classifying a single variable. The distribution of the multinomial dependent variable `y` is shown below.\
-In the left chart of the figure below, the distribution is more balanced than for the empirical data, with four out of the seven classes making up the majority of all.
+The final data set is generated with `p = 36` continuous predictor variables, `n = 20,000` observations, and correlations between `min_cor = -0.3` and `max_cor = 0.5`. While the function creates two outcome variables, the multinomial variable representing cover tree types and a binary variable indicating tree health, only the multinomial variable will be used for classification, as computational limits in this analysis only allow the classification of a single variable. The distribution of the multinomial dependent variable `y` is shown below.
+
+In the left chart of the figure below, it is visible that the distribution is more balanced than the empirical data, with four out of the seven classes making up the majority of all.
 
 ```{r, echo=FALSE}
 knitr::include_graphics("pics/dep-var.png")
@@ -214,7 +215,7 @@ knitr::include_graphics("pics/dep-var.png")
 
 ## GoF-measures
 
-To evaluate the performance of the Random Forest models, the following Goodness-of-Fit (GoF) measures are used:
+To evaluate the performance of the random forest implementations, the following Goodness-of-Fit (GoF) measures are used:
 
 ### Accuracy
 
@@ -260,37 +261,37 @@ By adjusting $\beta$, users can fine-tune the performance measure according to t
 
 As the focus in this study lies on comparing different R packages, a short introduction to each of the packages is needed. Each package has its own underlying philosophy. First, the *randomForest*-package is described, followed by *ranger* and lastly, the *party*-package [@hothorn2024] is introduced.
 
-The three packages are selected for different reasons. First, randomForest can be regarded as one of the standard packages implementing the random forest algorithm. In the literature, it is stated that the package is "feature-rich and widely used" [@wright2017, p. 1]. Therefore, randomForest was the inital choice for the analysis in this paper. Secondly, the ranger-package is able to handle a large number of features at the same time [@wright2017]. In this aspect, the ranger-package stands out among the different implementations of the random forest algorithm. In the party-package, lastly, the implementation of random forest is slightly different to the other R packages. This can be regarded as a promising aspect for which reason the package is included in the analysis.
+The three packages are selected for different reasons. First, *randomForest* can be regarded as one of the standard packages implementing the random forest algorithm. In the literature, it is stated that the package is "feature-rich and widely used" [@wright2017, p. 1]. Therefore, *randomForest* was the inital choice for the analysis in this paper. Secondly, the *ranger*-package is able to handle a large number of features at the same time [@wright2017]. In this aspect, the *ranger*-package stands out among the different implementations of the random forest algorithm. In the *party*-package, lastly, the implementation of random forest is slightly different to the other R packages. This can be regarded as a promising aspect for which reason the package is included in the analysis.
 
-Whilst preparing the analysis, other packages with random forest implementations were looked at but were not chosen for the final analysis. The R package caret presents itself as multi-functional whereas not specialized in implementing the random forest algorithm. Moreover, an initially high runtime was reported [@wright2017]. For these reasons, caret was not included in the analysis. @wright2017 also reported on the package rJungle which, on the one hand, is optimized for high dimensional data. On the other hand, rJungle is no longer maintained and has later merged into the ranger-package, which is already included in the analysis. Finally, the R package Rborist was considered in order to decide whether it should be included in the analysis. Compared to other packages, Rborist requires extensive fine-tuning of hyperparameters and of the function's arguments to achieve an equally high accuracy and performance [@wright2017]. Excluding Rborist from the analysis therefore seemed plausible.
+Whilst preparing the analysis, other packages with random forests implementations were looked at but were not chosen for the final analysis. The R package caret presents itself as multi-functional whereas not specialized in implementing the random forest algorithm. Moreover, an initially high runtime was reported [@wright2017]. For these reasons, caret was not included in the analysis. @wright2017 also reported on the package rJungle which, on the one hand, is optimized for high dimensional data. On the other hand, rJungle is no longer maintained and has later merged into the ranger-package, which is already included in the analysis. Finally, the R package Rborist was considered in order to decide whether it should be included in the analysis. Compared to other packages, Rborist requires extensive fine-tuning of hyperparameters and of the function's arguments to achieve an equally high accuracy and performance [@wright2017]. Excluding Rborist from the analysis therefore seemed plausible.
 
 ### RandomForest
 
-The package *randomForest* draws on the original algorithm described in @breiman2001 and originally published in Fortran [@breiman2002]. As randomForest can be regarded as one of the standard packages implementing the random forest algorithm in the function `randomForest`, the documentation of the package is extensive and gives the user plenty of advice on how the implemented functions work or which arguments can be specified. Additionally, developers can access the open-source published code to gain an even deeper understanding of the parameters used in defining the function `randomForest`.
+The package *randomForest* draws on the original algorithm described in @breiman2001 and originally published in Fortran [@breiman2002]. As *randomForest* can be regarded as one of the standard packages implementing the random forests algorithm in the function `randomForest`, the documentation of the package is extensive and gives the user plenty of advice on how the implemented functions work or which arguments can be specified. Additionally, developers can access the open-source published code to gain an even deeper understanding of the parameters used in defining the function `randomForest`.
 
 The type of dependent variable which is to be predicted determines whether classification or regression is performed using the random forest algorithm whereas the implementation of the two prediction methods slightly differs [@liaw2002]. This fact might be relevant for users interested in both, classification as well as regression, while there is no significance for the use in this paper.
 
-In comparison to other packages implementing the random forest algorithm, randomForest requires to manually specify parallelization techniques to optimize run-time and performance. This can be regarded as a disadvantage of the package.
+In comparison to other packages implementing the random forest algorithm, *randomForest* requires to manually specify parallelization techniques to optimize run-time and performance. This can be regarded as a disadvantage of the package.
 
 ### Ranger
 
-The R package random forest generator (known as "Ranger") package is an implementation for random forests with optimizations for high dimensional data in R [@schwarz2010]. The developers claim to provide a package which is comparably simple to use [@wright2017, p. 2].
+The R package random forest generator (known as "*ranger*") is an implementation for random forests with optimizations for high dimensional data in R [@schwarz2010]. The developers claim to provide a package which is comparably simple to use [@wright2017, p. 2].
 
-The package is optimized by extensive memory profiling for different types of input data. As a random forest is proceeded in R, all values of all features of `mtry` are splitting candidates. Since the required computational power increases exponentially with added features, this is the bottleneck for many random forest packages and the developers of the ranger package focused on this problem.
+The package is optimized by extensive memory profiling for different types of input data. As a random forest is proceeded in R, all values of all features of `mtry` are splitting candidates. Since the required computational power increases exponentially with added features, this is the bottleneck for many random forests packages and the developers of the ranger package focused on this problem.
 
 The `ranger` function is used to grow a forest and makes use of two different algorithms for the splitting process. At first, the feature values are sorted and accessed by their index. In the second algorithm, the values are sorted and retrieved while splitting.
 
-Other than the package randomForest, Ranger is license free and the software is open-source released which improves traceability of the functions for users on the one hand and accessible for implementation of new features by other developers on the other hand [@wright2017, pp. 2.]. It stands out, that the code for ranger is written in C++ and uses standard libraries only. C++ is described as a low-level language, which expresses in a machine-oriented design and more efficient use of memory [@haidl2017]. This makes parallel processing available and considerably accelerates the runtime. Besides from CART, survival trees are also supported by the ranger package.
+Additionally, *ranger* is license free and the software is open-source released which improves traceability of the functions for users on the one hand and accessible for implementation of new features by other developers on the other hand [@wright2017, pp. 2.]. It stands out, that the code for *ranger* is written in C++ and uses standard libraries only. C++ is described as a low-level language, which expresses in a machine-oriented design and more efficient use of memory [@haidl2017]. This makes parallel processing available and considerably accelerates the run-time. Besides from CART, survival trees are also supported by the *ranger* package.
 
 ### Party
 
 The documentation of the *party*-package states differences to the *randomForest*-package in the basic implementation, i.e. different base learners were used [@hothorn2024, p. 6]. Whereas the *randomForest*-package draws on Classification and Regression Trees (CART) to form a random forest, the *party*-package utilizes conditional inference trees in the `cforest` function designed to prevent overfitting and variable selection bias while combining statistical testing and the basic ideas of CART [@hothorn2006].
 
-In general, the party-package is designed for recursive partitioning [@wright2017]. At the same time, similar to the randomForest-package and in comparison to the ranger-package, party is not specifically optimized for high-dimensional data and requires to manually specify parallelization techniques.
+In general, the *party*-package is designed for recursive partitioning [@wright2017]. At the same time, similar to the *randomForest*-package and in comparison to the *ranger*-package, *party* is not specifically optimized for high-dimensional data and requires to manually specify parallelization techniques.
 
 ## Cross-Validation
 
-For the cross-validation, a function `cv_rf` is created to apply classification by the Random Forests algorithm, while drawing on the functions implemented in the R packages described in section 3.4: `randomForest`, `ranger`, and `cforest`. With `cv_rf`, the models' performance based on Accuracy, F1 score, and F-\$\\beta\$ score is estimated, while also recording the computational time taken to fit each model.
+For the cross-validation, a function `cv_rf` is created to apply classification by the random forests algorithm, while drawing on the functions implemented in the three selected R packages: `randomForest`, `ranger`, and `cforest`. With `cv_rf`, the models' performance based on Accuracy, F1 score, and F-\$\\beta\$ score is estimated, while also recording the computational time taken to fit each model.
 
 ``` r
 cv_rf <- function(train_data, test_data, y, mtry, ntree,
@@ -407,89 +408,87 @@ cv_rf <- function(train_data, test_data, y, mtry, ntree,
 
 By using parallelization techniques, various hyperparameter combinations (`ntree` and `mtry`) are efficiently tested. The function is run across all combinations while collecting the results for further analysis.
 
-The cross-validation is targeted at obtaining the optimal hyperparameter combinations as measured in different goodness-of-fit indicators for each type of data, empirical as well as simulated data,.
+The cross-validation is targeted at obtaining the optimal hyperparameter combinations as measured in different GoF indicators for each type of data, empirical as well as simulated data,.
 
 Mathematically interesting are the different default settings for the hyperparameters `ntree` and `mtry`. For example, the default value of `mtry` in the party-package is `mtry = 5` while in *randomForest* `mtry = sqrt(p)` is specified.
 
 # Results
 
-**(PARAMETER GENUTZT):\
-n=20.000** ;n_tree seq(450,550,50), mtry 3:7
+The analysis will focus on the output of the algorithm implemented in the `cv_rf` function with respect to each of the three tested R packages, *randomForest*, *ranger* and *party*. At first sight, the packages show different patterns regarding the required computational time and in the GoF measures. Each step is equivalent to a different hyperparameter combination as is visible in the table below. Values of `ntree` range from $450$ to $650$, while values from `mtry` range from $3$ to $7$.
 
-Now it will be analysed, what the algorithm cv_rf computed as an output for each of the three packages. At first sight packages show different patterns in case of the used computational time and the measurements of Goodness of Fit (GoF). The Pattern of the packages look similar. Each step stands for a different hyperparameter combination (1 - (ntree = 450, mtry = 3), 2 - (ntree = 450, mtry = 4), 3 - (ntree = 450, mtry = 5), 4 - (ntree = 450, mtry = 6), 5 - (ntree = 450, mtry = 7) and so on).
+| Step | Value of ntree | Value of mtry |
+|------|----------------|---------------|
+| 1    | 450            | 3             |
+| 2    | 450            | 4             |
+| 3    | 450            | 5             |
+| ...  | ...            | ...           |
 
-In case of the accuracy (comparing the two plots beneath), it can be seen, that the randomForest and ranger are generating higher values than the party package for both empirical and theoretical data. This can be seen especially for the empirical data, where the party package performs less efficient than randomForest and ranger. The pattern seems to be similar regarding the slope. Overall, the values for every package for the empirical data are higher than for the simulated data.
+In case of the GoF measure accuracy, as can be seen in the two figures below, the R packages *randomForest* and *ranger* are generating higher values than the *party* package for both simulated and empirical data. This is especially true for the empirical data, for which the *party* package is less efficient than *randomForest* and *ranger*. Regarding the slope, the pattern seems to be similar. For all three packages, there is a higher accuracy when performing classification on the empirical data than on simulated data.
 
-![Simulated data](pics/GoF_Accuracy.png)
+![**Simulated data**](pics/GoF_Accuracy.png){width="60%"}
 
-![Empirical data](pics/GoF_emp_Accuracy.png)
+![**Empirical data**](pics/GoF_emp_Accuracy.png){width="60%"}
 
-For the F1-Score (comparing the two plots beneath) the same assumption yields. randomForest achieves the highest score overall compared to the other packages for the combination ntree = 550 and mtry = 7 -- this yields for the simulated data. For the empirical data ranger performs best.
+In the two figures below, the F1-Scores across the different hyperparameter combinations are shown. The same assumption regarding the accuracy applies to the F1 score. For the combination of the arguments, `ntree = 550` and `mtry = 7`, the package *randomForest* achieves the highest overall score compared to the other packages -- this yields for the simulated data. The package *ranger* achieve the highest F1-Scores for the classification of the empirical data.
 
-![Simulated data](pics/GoF_F1%20Score.png)
+![**Simulated data**](pics/GoF_F1%20Score.png){width="60%"}
 
-![Empirical data](pics/GoF_emp_F1%20Score.png)
+![**Empirical data**](pics/GoF_emp_F1%20Score.png){width="60%"}
 
-The F-Beta-Score (comparing the two plots beneath) shows the same behaviour for the several packages. Party achieves the highest score overall compared to the other packages for the combination ntree = 550 and mtry = 6 -- this yields for the simulated data. For the empirical data ranger performs best. This could be a hint, that those packages perform better in case of precision.
+The three packages show similar results for the F-$\beta$-Score. The *party* package achieves the highest overall score compared to the other packages for the hyperparameter combination of `ntree = 550` and `mtry = 6` -- this is true for the simulated data. Regarding the classification of the empirical data, *ranger* performs best. This could be seen as a hint that those packages perform better in case of precision.
 
-![Simulated data](pics/GoF_F-beta%20Score.png)
+![**Simulated data**](pics/GoF_F-beta%20Score.png){width="60%"}
 
-![Empirical data](pics/GoF_emp_F-beta%20Score.png)
+![**Empirical data**](pics/GoF_emp_F-beta%20Score.png){width="60%"}
 
-Regarding the time (comparing the two plots beneath) for the simulated data party is less time consuming than the other ones. ranger is most time consuming, with a break at the end, where ranger performs best. For the empirical data party is less time consuming, where as randomForest is most time consuming.
+Apart from the GoF measures, the analysis also includes measures on the computational time required to perform classification with the random forests implementations. As is visible in the two figures below, the RF implementation in the *party* package requires less computational time than the *randomForest* and *ranger* package. *Ranger* has, in general, the most time-consuming implementation. Regarding the classification on empirical data, the implementation in the *party* package is less time consuming compared to the *randomForest* package.
 
-![Simulated data](pics/GoF_Time.png)
+![**Simulated data**](pics/GoF_Time.png){width="60%"}
 
-![Empirical data](pics/GoF_emp_Time.png)
+![**Empirical data**](pics/GoF_emp_Time.png){width="60%"}
 
-One of the reasons for the different behaviour with respect to computational time and the GoF could be those hyperparameters in the functions which were not tested in the analysis. For this reason, the analysis included a further investigation of how the random forest algorithm was implemented in the different packages. The source code can be accessed via CRAN for each individual package. All of the three analyzed packages refer to other programming languages for the computation of the random forest algorithm itself.
+One of the reasons for the differing results of the packages with respect to computational time and the GoF could be those hyperparameters in the functions which were not tested in the analysis. For this reason, the analysis included a further investigation of how the random forest algorithm was implemented in the different packages. The source code can be accessed via CRAN for each individual package. All of the three analyzed packages refer to other programming languages for the computation of the random forest algorithm itself.
 
-In case of the randomForest package, the computation of the random forest algorithm is written in Fortran, with an R port to provide access to the implementation in R [@breiman2002]. The ranger package refers to C++ [@wright2017] while in the case of the party package, it is not clarified how the algorithm is implemented apart from the R function [@hothorn2024; @hothorn2024a]. For the final implementation in the R functions, each package includes helper functions checking and adjusting the hyperparameters. The manual specification via specifying the arguments of the packages' functions serves as an input for the function in the background, which computes the desired output.
+In case of the *randomForest* package, the computation of the random forests algorithm is written in Fortran, with an R port to provide access to the implementation in R [@breiman2002]. The *ranger* package refers to C++ [@wright2017] while in the case of the *party* package, it is not clarified how the algorithm is implemented apart from the R function [@hothorn2024; @hothorn2024a]. For the final implementation in the R functions, each package includes helper functions checking and adjusting the hyperparameters. The manual specification via specifying the arguments of the packages' functions serves as an input for the function in the background, which computes the desired output.
 
-It can be seen that the default argument in randomForest, ranger and party is the same for `ntree = 500` (green marks in the imagine beneath). Also, the number of variables used for each split for the selection `mtry` can be specified. Comparing the R packages, it can be seen that `mtry = floor(sqrt(ncol(x)))` for randomForest, which adjusts downward and `mtry = ceiling(sqrt(nvar))` for party, which adjusts upward (orange marks in the imagine beneath). The ranger package does not adjust this hyperparameter in the R source code, therefore, the expectation is an implementation in the C++ script. Nonetheless, the documentation of the ranger package states $\sqrt p$ as the default argument.
+It can be seen that the default argument in *randomForest*, *ranger* and *party* is the same for `ntree = 500` (underline in green in the imagine beneath). Also, the number of variables used for each split for the selection `mtry` can be specified. Comparing the R packages, it can be seen that `mtry = floor(sqrt(ncol(x)))` for *randomForest*, which adjusts downward and `mtry = ceiling(sqrt(nvar))` for party, which adjusts upward (underline in orange in the imagine beneath). The *ranger* package does not adjust this hyperparameter in the R source code, therefore, the expectation is an implementation in the C++ script. Nonetheless, the documentation of the ranger package states $\sqrt p$ as the default argument.
 
 ```{r, echo=FALSE}
 knitr::include_graphics("pics/Tab1.png")
 ```
 
-Another important part is the hyperparameter `sampsize` (randomForest), `sample.fraction` (ranger) and `perturb` (party). This parameter adjusts the fraction or number of observations to sample or draw -- for classification, this parameter equals `1`.
+Another important part is the hyperparameter `sampsize` (randomForest), `sample.fraction` (ranger) and `perturb` (party). This parameter adjusts the fraction or number of observations to sample or draw -- for classification, this parameter equals $1$.
 
 ```{r, echo=FALSE}
 knitr::include_graphics('pics/Tab2.png')
 ```
 
-One major argument why the predicted results differ is described in the documentation of the party package [@hothorn2024, p. 6]:
+One major argument why the predicted results differ is described in the documentation of the *party* package [@hothorn2024, p. 6]:
 
-"Moreover, when predictors vary in their scale of measurement of number of categories, variable selection and computation of variable importance is biased in favor of variables with many potential cutpoints in randomForest, while in cforest unbiased trees and an adequate resampling scheme are used by default."
+*"Moreover, when predictors vary in their scale of measurement of number of categories, variable selection and computation of variable importance is biased in favor of variables with many potential cutpoints in randomForest, while in cforest unbiased trees and an adequate resampling scheme are used by default."*
 
-This could be another reason for the findings of the analysis in this paper while also the adjusted seed in the ranger package could play a role. This argument states `seed = runif(1, 0, max)`, which is the seed included in the C++ function.
+This could be another reason for the findings of the analysis in this paper while also the adjusted seed in the *ranger* package could play a role. This argument states `seed = runif(1, 0, max)`, which is the seed included in the C++ function.
 
 ```{r, echo=FALSE}
 knitr::include_graphics('pics/pic1.png')
 ```
 
-Interestingly to note is the differing performance between varying specifications of n = 20,000 and n = 10,000. This yields especially for the simulated data.
+Interesting to note is the differing performance between varying specifications of `n = 20,000`, which were specified for all of the figures above, and `n = 10,000`. This is especially true for the simulated data. Comparing the figure below with the first figure on the F-$\beta$ Score for empirical data, there are large differences in the F-$\beta$ Score for the *party* package which seems to perform extensively better with a higher `n`.
 
-![Empirical data](pics_n10000/GoF_F-beta%20Score.png)
-
-Compare this image with the image above for the F-Beta Score for empirical data. For the purpose of clarification - the missing values resulting from NAs in the computation in the F-Beta score are based on small values in either Precision or Recall.
+![**Empirical data**](pics_n10000/GoF_F-beta%20Score.png){width="60%"}
 
 # Conclusion
 
-From the point of view of random forest beginners, it is reasonable to start with basic packages which provide good documentation and well explained hyperparameters. For this reason, this paper recommends using the R package randomForest itself. The randomForest package is a direct product of Leo Breiman, which could be used as useful link between theory and practice.
+To sum up – the following recommendation is made. As for random forests beginners, it is reasonable to start with basic packages which provide good documentation and well explained hyperparameters. For this reason, this paper recommends using the R package *randomForest* itself. The *randomForest* package is a direct product of Leo Breiman, which could be used as useful link between theory and practice.
 
-For users familiar with the random forest algorithm, it is recommended to use the ranger package. Ranger provides a more detailed documentation and allows for specifying more hyperparameters. As the ranger package is optimized for high-dimensional data and includes parallelization techniques, this aspect presents itself as starting points for future research. The performance could be improved by increasing the number of threads used while the default are the available CPUs.
+For users familiar with the random forests algorithm, it is recommended to use the *ranger* package. *Ranger* provides a more detailed documentation and allows for specifying more hyperparameters. As the *ranger* package is optimized for high-dimensional data and includes parallelization techniques, this aspect presents itself as starting points for future research. The performance could be improved by increasing the number of threads used while the default are the available CPUs.
 
-Lastly, the party package offer a special kind of the random forest algorithm as the function `cforest` provides an alternative with conditional random forests. The documentation of the package and especially for the `cforest` function can be improved compared to the extensive documentation of the other two packages included in the analysis of this paper. Similar to the ranger package, the party package draws on parallelization techniques without further specifying the actual implementation. This package seems to be in process of developing (see the comment above the code in the following image):
+Lastly, the *party* package offer a special kind of the random forests algorithm as the function `cforest` provides an alternative with conditional random forests. The documentation of the package and especially for the `cforest` function can be improved compared to the extensive documentation of the other two packages included in the analysis of this paper. Similar to the *ranger* package, the *party* package draws on parallelization techniques without further specifying the actual implementation. As this package is comparably new, further changes in the implementation can be expected.
 
-```{r, echo=FALSE}
-knitr::include_graphics('pics/pic2.png')
-```
+The *party* package can also be seen as a package example of a random forests implementation build from scratch. For users interested in building own functions or own implementations for the random forest algorithm, the *party* package could be a potential candidate.
 
-The party package can be seen as package example of a random forest implementation build from scratch. For users interested in building own functions or own implementations for the random forest algorithm, the party package could be a potential candidate.
+To further trace back and understand the implementation of the random forest algorithm in C++ or Fortran, additional knowledge and advanced programming skills are needed, as well as more extensive documentation of the implementations.
 
-For further information and deep dive into the code of the actual computation of the random forest this should be regarded by someone with advanced programming skills. It would be worth a deep dive into the code programmed in C++ and Fortran to get an understanding of the actual computations.
-
-There cloud be also an interesting opportunity to study the behaviours of the packages regarding the samplesize n=10000. Here this paper discovered in the preparation of the actual output, that the party package could perform less efficient in sense of the used GoF – this can be in regard to the F1- and the F-beta score. Here seems to be potential in regarding the comparison of the performence and the samplesize of a dataset - which packages is more efficient?
+With additional computational capacities, it could be valuable to further study the behaviours of the packages regarding additional changes in the sample size `n`. In this paper, major differences between packages and also within the same package were discovered. This realisation indicates that many possible hyperparameters and functional arguments that can be specified also shows that the remaining question - which packages are more efficient - can be further investigated.
 
 # References
