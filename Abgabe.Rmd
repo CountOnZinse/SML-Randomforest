@@ -460,6 +460,9 @@ This could be another reason for the findings of the analysis in this paper whil
 knitr::include_graphics('pics/pic1.png')
 ```
 
+Interestingly to note is the differing performance between varying specifications of n = 20,000 and n = 10,000. 
+hier plots einfügen aus dem ordner picsn10000
+
 # Conclusion
 
 As from the point of view of random forest beginners, it is reasonable to start with basic packages which provide good documentation and well explained hyperparameters. For this reason, this paper recommends using the R package randomForest itself. The randomForest package is a direct product of Leo Breiman, which could be used as useful link between theory and practice.
