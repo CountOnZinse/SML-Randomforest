@@ -208,7 +208,7 @@ The function `gen_dataset` generates a vector of random values between `min_cor`
 The final data set is generated with `p = 54` continuous predictor variables, `n = 100,000` observations, and correlations between `min_cor = -0.3` and `max_cor = 0.5`. While the function creates two outcome variables, the multinomial variable representing cover tree types and a binary variable indicating tree health, only the multinomial variable will be used for classification, as computational limits in this analysis only allow classifying a single variable. The distribution of the multinomial dependent variable `y` is shown below.
 
 ```{r, echo=FALSE}
-knitr::include_graphics("dependent_vars.png")
+knitr::include_graphics("pics/dependent-vars.png")
 ```
 
 ## GoF-measures
