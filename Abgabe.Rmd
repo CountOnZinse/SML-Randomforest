@@ -457,7 +457,7 @@ It can be seen that the default argument in *randomForest*, *ranger* and *party*
 knitr::include_graphics("pics/Tab1.png")
 ```
 
-Another important part is the hyperparameter `sampsize` (randomForest), `sample.fraction` (ranger) and `perturb` (party). This parameter adjusts the fraction or number of observations to sample or draw -- for classification, this parameter equals $1$.
+Another important part is the hyperparameter `sampsize` (*randomForest*), `sample.fraction` (*ranger*) and `perturb` (*party*). This parameter adjusts the fraction or number of observations to sample or draw -- for classification, this parameter equals $1$.
 
 ```{r, echo=FALSE}
 knitr::include_graphics('pics/Tab2.png')
